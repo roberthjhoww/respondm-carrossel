@@ -22,12 +22,12 @@
    está nas regras do Firestore + no login, não em esconder isto). Preencher depois de criar
    o projeto novo no console do Firebase — ver README.md, passo 2. */
 var firebaseConfig={
-  apiKey:"COLE_AQUI",
-  authDomain:"COLE_AQUI.firebaseapp.com",
-  projectId:"COLE_AQUI",
-  storageBucket:"COLE_AQUI.firebasestorage.app",
-  messagingSenderId:"COLE_AQUI",
-  appId:"COLE_AQUI"
+  apiKey:"AIzaSyBpCqN7cke5klHtkFVy9L0-L_2LlKs4-h0",
+  authDomain:"respondm-carrossel.firebaseapp.com",
+  projectId:"respondm-carrossel",
+  storageBucket:"respondm-carrossel.firebasestorage.app",
+  messagingSenderId:"361149348347",
+  appId:"1:361149348347:web:08c1f9e724bb516ffcb35e"
 };
 firebase.initializeApp(firebaseConfig);
 window.fbAuth=firebase.auth();
@@ -35,7 +35,7 @@ window.fbDB=firebase.firestore();
 
 /* ── Endereço do Cloudflare Worker (o "proxy" que esconde as chaves de IA) ──
    Preencher depois do deploy do worker/index.js — ver README.md, passo 3. */
-window.WORKER_URL="https://COLE_AQUI.workers.dev";
+window.WORKER_URL="https://respondm-carrossel-proxy.roberthjhow.workers.dev";
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
