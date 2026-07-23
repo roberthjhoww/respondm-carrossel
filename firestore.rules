@@ -1,0 +1,15 @@
+rules_version = '2';
+
+// Só as duas contas autorizadas (Robert e o sócio) podem ler/escrever qualquer coisa.
+// Colar isto na aba "Regras" do Firestore no console do Firebase (ver README.md, passo 2).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null
+        && request.auth.token.email in [
+          "roberthjhow@gmail.com",
+          "pablonatan.d.r.s@gmail.com"
+        ];
+    }
+  }
+}
