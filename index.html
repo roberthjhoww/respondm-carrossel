@@ -17,10 +17,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-/* ── Configuração do Firebase ──
-   Estas chaves NÃO são segredo (é assim que todo app web Firebase funciona: a proteção real
-   está nas regras do Firestore + no login, não em esconder isto). Preencher depois de criar
-   o projeto novo no console do Firebase — ver README.md, passo 2. */
+/* ── Configuração do Firebase (chaves públicas — protegido por regras + login) ── */
 var firebaseConfig={
   apiKey:"AIzaSyBpCqN7cke5klHtkFVy9L0-L_2LlKs4-h0",
   authDomain:"respondm-carrossel.firebaseapp.com",
@@ -33,8 +30,7 @@ firebase.initializeApp(firebaseConfig);
 window.fbAuth=firebase.auth();
 window.fbDB=firebase.firestore();
 
-/* ── Endereço do Cloudflare Worker (o "proxy" que esconde as chaves de IA) ──
-   Preencher depois do deploy do worker/index.js — ver README.md, passo 3. */
+/* ── Endereço do Cloudflare Worker (o "proxy" que esconde as chaves de IA) ── */
 window.WORKER_URL="https://respondm-carrossel-proxy.roberthjhow.workers.dev";
 </script>
 <style>
@@ -46,20 +42,16 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;font-size:1
   --text:#1A1630;--text2:#6B6487;--text3:#A49EC4;
   --border:#E3DFF4;--border2:#CBC3EF;
   --red:#B82828;--red-bg:#FDEAEA;
+  --green:#1B8B5E;--green-bg:#E6F5EF;
   --shadow-sm:0 1px 3px rgba(116,71,225,.07),0 2px 8px rgba(116,71,225,.05);
   --shadow-md:0 4px 24px rgba(116,71,225,.14);
   background:var(--bg);color:var(--text);}
-body.dark{
-  --bg:#0E0C1A;--surface:#17142B;--surface2:#1E1A33;
-  --text:#EAE6FC;--text2:#9990BF;--text3:#5E5885;
-  --border:#2A2545;--border2:#3B3560;
-  --purple-light:rgba(116,71,225,.22);
-  --red-bg:rgba(184,40,40,.18);
-  --shadow-sm:0 1px 4px rgba(0,0,0,.4);--shadow-md:0 4px 24px rgba(0,0,0,.5);}
-#root{max-width:1080px;margin:0 auto;padding:0 20px 60px;}
-input,select,button,textarea{font-family:inherit;}
+#root{max-width:900px;margin:0 auto;padding:0 20px 80px;}
+input,select,button,textarea{font-family:inherit;font-size:14px;color:var(--text);}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--purple);outline-offset:1px;border-color:var(--purple)!important;}
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px;}
 </style>
 </head>
 <body><div id="root"></div>
@@ -69,17 +61,180 @@ const {useState,useEffect}=React;
 // Emails autorizados a usar o app (a segurança real está nas regras do Firestore)
 const AUTHORIZED_EMAILS=["roberthjhow@gmail.com","pablonatan.d.r.s@gmail.com"];
 
-// As 4 etapas do wizard, na ordem. O conteúdo de cada etapa é a Fase 2/3 (ainda não construídas).
 const STEPS=["Categoria","Tema","Roteiro","Slides"];
+const DRAFT_KEY="rdm_carrossel_draft_v1";
 
+const CATEGORIAS=[
+  {id:"noticias",emoji:"📰",nome:"Notícias e novidades",desc:"Atualizações do Instagram, redes sociais e IA. Conteúdo tipo \"acabou de mudar\"."},
+  {id:"curiosidades",emoji:"🤯",nome:"Curiosidades e dados",desc:"Números e fatos pouco conhecidos que geram \"eu não sabia disso\"."},
+  {id:"tutoriais",emoji:"📋",nome:"Tutoriais e passo a passo",desc:"Como fazer algo, em passos numerados. Formato bem salvável."},
+  {id:"erros_mitos",emoji:"⚠️",nome:"Erros, mitos e bastidores",desc:"Quebra de crença errada: mito vs verdade, erro vs certo, antes/depois."},
+];
+
+/* ─────────────────────────────────────────────
+   Prompts da IA (destilados da skill de carrossel da ResponDM)
+   ───────────────────────────────────────────── */
+const PROMPT_BASE=`Você escreve carrosséis para o Instagram da ResponDM (@respon_dm).
+
+SOBRE A RESPONDM (use só o que for verdade, nunca invente recurso):
+A ResponDM é um SaaS brasileiro de automação de interações no Instagram pela API oficial da Meta. Recursos reais: automação por comentário (comentou a palavra-chave, recebe DM automática), automação por DM, automação por story, resposta pública automática em comentários, Flow (fluxo de mensagens em canvas com condições, delays, tags e coleta de dados), Link Bio, envio só para seguidores. Sempre trate a marca no feminino: "a ResponDM".
+
+PÚBLICO: criadores de conteúdo, infoprodutores, agências e negócios locais brasileiros que querem crescer no Instagram sem contratar equipe.
+
+TOM: criador experiente que vive isso todos os dias, não empresa se vendendo. Português brasileiro coloquial mas inteligente. Frases curtas. Autoridade sem arrogância.
+
+REGRAS DE CADA SLIDE:
+- 1 ideia por slide, com pelo menos um dado, número, mecanismo ou situação concreta.
+- Título de slide: até 12 palavras, provoca leitura em vez de descrever o slide.
+- Texto de apoio: 1 a 2 frases curtas que adicionam algo novo (nunca continuação óbvia do título).
+- Quando a ResponDM aparecer como solução, nomeie o mecanismo concreto (ex: "a automação por comentário entrega o PDF no direct"), nunca benefício vago.
+- A ResponDM não precisa aparecer em todo slide nem em todo carrossel.
+
+PROIBIDO (nunca use):
+- travessão (o caractere —) em qualquer texto
+- "Não é sobre X, é sobre Y" / "No mundo de hoje" / "Mais do que nunca" / "cada vez mais" / "de forma eficiente" / "potencializar" / "alavancar" / "transformar seu negócio" / "escalar seu negócio" / "presença digital" / "jornada do cliente" / "chegou a hora" / "não perca mais tempo" / "solução completa" / "resultados incríveis" / "impacto real"
+- benefício sem mecanismo que o explique
+- headline que descreve o conteúdo em vez de provocar
+- conclusão óbvia embalada como insight
+
+ESTRUTURA GERAL: slide 1 é a capa (hook). Slide 2 reduz ceticismo e abre o loop ("nos próximos X slides você vai ver..."). Slides internos desenvolvem. Último slide é o CTA: pedir para comentar UMA palavra-chave para receber algo no direct (o post vira demonstração da própria ResponDM). A palavra-chave deve ser UMA palavra em maiúsculas relacionada ao tema.`;
+
+const PROMPT_CATEGORIA={
+  noticias:`CATEGORIA: NOTÍCIA/NOVIDADE.
+Tom "acabou de mudar", informação fresca, zero enrolação. Estrutura: capa com a mudança + urgência; slide 2 contextualiza o que mudou e abre o loop; desenvolvimento com o que muda na prática (datas, números, quem é afetado); penúltimo slide interno mostra como aproveitar a mudança; CTA final. Etiquetas sugeridas por slide: NOVIDADE, MUDOU, CONTEXTO, IMPACTO, APLIQUE.`,
+  curiosidades:`CATEGORIA: CURIOSIDADE/DADO CHOCANTE.
+Estrutura: capa com o dado mais chocante (número grande em destaque no título); slide 2 promete o contexto e abre o loop; desenvolvimento alterna dado (etiqueta DADO) e o que ele significa (etiqueta CONTEXTO); fechamento com aplicação prática (etiqueta DICA ou APLIQUE); CTA final.`,
+  tutoriais:`CATEGORIA: TUTORIAL/PASSO A PASSO.
+Estrutura: capa com a promessa específica do resultado; slide 2 diz o que a pessoa vai conseguir fazer e abre o loop; desenvolvimento em passos numerados (etiquetas "PASSO 1", "PASSO 2"...), cada passo com UMA ação concreta executável; último slide interno é um resumo salvável de todos os passos (etiqueta RESUMO); CTA final. Priorize o formato salvável.`,
+  erros_mitos:`CATEGORIA: ERROS/MITOS/BASTIDORES.
+Fórmula PAS (dor, agitação, solução). Estrutura: capa provoca com o erro ou mito mais comum do público; slide 2 reduz ceticismo e abre o loop; desenvolvimento em pares: um slide com o mito/erro (etiqueta MITO ou ERRO) seguido de um slide com a verdade/correção (etiqueta VERDADE ou CERTO); fechamento com a virada de perspectiva; CTA final.`,
+};
+
+const SCHEMA_CAPAS={
+  type:"object",
+  properties:{
+    capas:{type:"array",items:{
+      type:"object",
+      properties:{
+        headline:{type:"string",description:"Título da capa, 8 a 12 palavras, para o scroll sozinho"},
+        subtitulo:{type:"string",description:"Subtítulo curto de apoio, 1 frase"},
+      },
+      required:["headline","subtitulo"],additionalProperties:false,
+    }},
+  },
+  required:["capas"],additionalProperties:false,
+};
+
+const SCHEMA_ROTEIRO={
+  type:"object",
+  properties:{
+    slides:{type:"array",items:{
+      type:"object",
+      properties:{
+        etiqueta:{type:"string",description:"Etiqueta curta em maiúsculas (ex: MITO, VERDADE, PASSO 1, DADO) ou string vazia"},
+        titulo:{type:"string",description:"Título do slide, até 12 palavras"},
+        texto:{type:"string",description:"Texto de apoio, 1 a 2 frases curtas"},
+      },
+      required:["etiqueta","titulo","texto"],additionalProperties:false,
+    }},
+    cta:{type:"object",
+      properties:{
+        titulo:{type:"string",description:"Título do slide final de CTA"},
+        texto:{type:"string",description:"Instrução curta: comente a palavra-chave e receba no direct"},
+        palavra_chave:{type:"string",description:"UMA palavra em maiúsculas"},
+      },
+      required:["titulo","texto","palavra_chave"],additionalProperties:false,
+    },
+  },
+  required:["slides","cta"],additionalProperties:false,
+};
+
+/* ─────────────────────────────────────────────
+   Chamada à IA via Worker
+   ───────────────────────────────────────────── */
+async function chamarIA({system,userText,useWebFetch,schema,maxTokens}){
+  const body={
+    system,
+    messages:[{role:"user",content:userText}],
+    thinking:{type:"adaptive"},
+    max_tokens:maxTokens||16000,
+    output_config:{format:{type:"json_schema",schema}},
+  };
+  if(useWebFetch) body.tools=[{type:"web_fetch_20260209",name:"web_fetch",max_uses:3}];
+  const r=await fetch(WORKER_URL+"/roteiro",{
+    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),
+  });
+  let data;
+  try{data=await r.json();}catch(e){throw new Error("Resposta inválida do servidor ("+r.status+")");}
+  if(!r.ok) throw new Error(data?.error?.message||data?.error||("Erro "+r.status));
+  if(data.stop_reason==="refusal") throw new Error("A IA recusou gerar esse conteúdo. Tente reformular o tema.");
+  const textos=(data.content||[]).filter(b=>b.type==="text"&&b.text);
+  if(!textos.length) throw new Error("A IA não retornou texto. Tente de novo.");
+  return JSON.parse(textos[textos.length-1].text);
+}
+
+function contextoDoProjeto(p){
+  const internos=p.qtdSlides-2;
+  let s=`CATEGORIA ESCOLHIDA: ${CATEGORIAS.find(c=>c.id===p.categoria)?.nome||p.categoria}`;
+  if(p.tema) s+=`\nTEMA DO CARROSSEL: ${p.tema}`;
+  if(p.link) s+=`\nLINK DE MATÉRIA (leia a página com web_fetch e use como base factual do conteúdo): ${p.link}`;
+  if(p.textoPronto) s+=`\nTEXTO BASE (adapte ESTE conteúdo para os slides, sem inventar fatos que não estão nele):\n"""\n${p.textoPronto}\n"""`;
+  s+=`\nTOTAL DE SLIDES: ${p.qtdSlides} (slide 1 = capa, ${internos} slides internos, último slide = CTA)`;
+  return s;
+}
+
+/* ─────────────────────────────────────────────
+   Componentes básicos
+   ───────────────────────────────────────────── */
+function Btn({children,onClick,variant,disabled,style}){
+  const base={padding:"12px 22px",borderRadius:12,fontWeight:700,fontSize:14,cursor:disabled?"default":"pointer",border:"1.5px solid transparent",opacity:disabled?.55:1,fontFamily:"inherit"};
+  const kinds={
+    primary:{background:"var(--purple)",color:"#fff"},
+    secondary:{background:"var(--surface)",color:"var(--text)",borderColor:"var(--border2)"},
+    ghost:{background:"none",color:"var(--text2)",padding:"8px 12px",fontWeight:600},
+  };
+  return <button onClick={onClick} disabled={disabled} style={{...base,...(kinds[variant||"primary"]),...style}}>{children}</button>;
+}
+function Field({label,children}){
+  return(
+    <div style={{marginBottom:18}}>
+      <div style={{fontSize:12,fontWeight:700,textTransform:"uppercase",letterSpacing:.5,color:"var(--text2)",marginBottom:6}}>{label}</div>
+      {children}
+    </div>
+  );
+}
+const inputStyle={width:"100%",padding:"11px 14px",borderRadius:11,border:"1.5px solid var(--border2)",background:"var(--surface)",fontSize:14};
+function ErrBox({msg,onClose}){
+  if(!msg) return null;
+  return(
+    <div style={{fontSize:13,color:"var(--red)",background:"var(--red-bg)",border:"1px solid var(--red)",borderRadius:11,padding:"10px 14px",fontWeight:600,marginBottom:16,display:"flex",justifyContent:"space-between",gap:12}}>
+      <span>{msg}</span>
+      <button onClick={onClose} style={{border:"none",background:"none",cursor:"pointer",color:"var(--red)",fontWeight:800}}>✕</button>
+    </div>
+  );
+}
+function Card({children,onClick,selected,style}){
+  return(
+    <div onClick={onClick} style={{
+      background:"var(--surface)",border:"2px solid "+(selected?"var(--purple)":"var(--border)"),
+      borderRadius:16,padding:20,cursor:onClick?"pointer":"default",
+      boxShadow:selected?"var(--shadow-md)":"var(--shadow-sm)",...style}}>
+      {children}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Login
+   ───────────────────────────────────────────── */
 function LoginScreen(){
   const [loading,setLoading]=useState(false);
   const [err,setErr]=useState("");
   const ERR_MAP={
     "auth/popup-closed-by-user":"Login cancelado.",
     "auth/popup-blocked":"O navegador bloqueou a janela de login. Permita pop-ups e tente de novo.",
-    "auth/unauthorized-domain":"Este domínio não está autorizado no Firebase (ver README.md, passo 2).",
-    "auth/network-request-failed":"Sem conexão com a internet."
+    "auth/unauthorized-domain":"Este domínio não está autorizado no Firebase.",
+    "auth/network-request-failed":"Sem conexão com a internet.",
   };
   async function handleGoogleLogin(){
     setLoading(true);setErr("");
@@ -98,7 +253,7 @@ function LoginScreen(){
         <div style={{fontSize:24,fontWeight:800,letterSpacing:"-.03em",marginBottom:4}}>respon<span style={{color:"var(--purple)"}}>DM</span></div>
         <div style={{fontSize:13,color:"var(--text3)",marginBottom:24}}>Gerador de Carrossel</div>
         {err&&<div style={{fontSize:12,color:"var(--red)",background:"var(--red-bg)",border:"1px solid var(--red)",borderRadius:9,padding:"8px 12px",fontWeight:600,marginBottom:14}}>{err}</div>}
-        <button onClick={handleGoogleLogin} disabled={loading} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,width:"100%",padding:"11px 16px",borderRadius:11,border:"1.5px solid var(--border2)",background:"var(--surface)",color:"var(--text)",fontSize:14,fontWeight:600,cursor:loading?"default":"pointer",fontFamily:"inherit",opacity:loading?.6:1}}>
+        <button onClick={handleGoogleLogin} disabled={loading} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,width:"100%",padding:"11px 16px",borderRadius:11,border:"1.5px solid var(--border2)",background:"var(--surface)",fontSize:14,fontWeight:600,cursor:loading?"default":"pointer",opacity:loading?.6:1}}>
           <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
           {loading?"Entrando...":"Entrar com Google"}
         </button>
@@ -107,7 +262,6 @@ function LoginScreen(){
     </div>
   );
 }
-
 function DeniedScreen(){
   return(
     <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:20,textAlign:"center"}}>
@@ -119,38 +273,281 @@ function DeniedScreen(){
   );
 }
 
-function TopBar({step,setStep,user}){
+/* ─────────────────────────────────────────────
+   Barra do topo
+   ───────────────────────────────────────────── */
+function TopBar({step,setStep,onNovo}){
   return(
-    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"24px 0",borderBottom:"1px solid var(--border)",marginBottom:32,flexWrap:"wrap",gap:16}}>
-      <div style={{fontSize:20,fontWeight:800,letterSpacing:"-.02em"}}>respon<span style={{color:"var(--purple)"}}>DM</span> <span style={{color:"var(--text3)",fontWeight:600}}>Carrossel</span></div>
-      <div style={{display:"flex",gap:4}}>
+    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"22px 0",borderBottom:"1px solid var(--border)",marginBottom:28,flexWrap:"wrap",gap:14}}>
+      <div style={{fontSize:19,fontWeight:800,letterSpacing:"-.02em"}}>respon<span style={{color:"var(--purple)"}}>DM</span> <span style={{color:"var(--text3)",fontWeight:600}}>Carrossel</span></div>
+      <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
         {STEPS.map((label,i)=>(
           <button key={label} onClick={()=>setStep(i)} style={{
-            padding:"8px 16px",borderRadius:999,border:"1.5px solid "+(step===i?"var(--purple)":"var(--border)"),
+            padding:"7px 14px",borderRadius:999,border:"1.5px solid "+(step===i?"var(--purple)":"var(--border)"),
             background:step===i?"var(--purple-light)":"transparent",color:step===i?"var(--purple)":"var(--text2)",
-            fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"inherit"
+            fontWeight:700,fontSize:13,cursor:"pointer"
           }}>{i+1}. {label}</button>
         ))}
       </div>
-      <div style={{fontSize:12,color:"var(--text3)"}}>{user?.email}</div>
+      <Btn variant="ghost" onClick={onNovo}>+ Novo carrossel</Btn>
     </div>
   );
 }
 
-function StepPlaceholder({name}){
+/* ─────────────────────────────────────────────
+   Etapa 1 — Categoria
+   ───────────────────────────────────────────── */
+function StepCategoria({projeto,update,next}){
   return(
-    <div style={{background:"var(--surface)",border:"1.5px dashed var(--border2)",borderRadius:16,padding:48,textAlign:"center",color:"var(--text3)"}}>
-      <div style={{fontSize:16,fontWeight:700,color:"var(--text2)",marginBottom:8}}>Etapa "{name}"</div>
-      <div>Fundação (Fase 1) pronta: login, Firestore e Worker conectados.<br/>O conteúdo desta etapa é construído na Fase 2/3, depois da entrevista de fluxo e visual.</div>
+    <div>
+      <h2 style={{fontSize:22,fontWeight:800,marginBottom:6}}>Que tipo de carrossel?</h2>
+      <p style={{color:"var(--text2)",marginBottom:22}}>A categoria define o estilo do roteiro e o visual dos slides.</p>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14}}>
+        {CATEGORIAS.map(c=>(
+          <Card key={c.id} selected={projeto.categoria===c.id} onClick={()=>{update({categoria:c.id});next();}}>
+            <div style={{fontSize:28,marginBottom:8}}>{c.emoji}</div>
+            <div style={{fontWeight:800,fontSize:15,marginBottom:4}}>{c.nome}</div>
+            <div style={{fontSize:13,color:"var(--text2)"}}>{c.desc}</div>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
+
+/* ─────────────────────────────────────────────
+   Etapa 2 — Tema
+   ───────────────────────────────────────────── */
+function StepTema({projeto,update,next,back}){
+  const podeAvancar=!!(projeto.tema.trim()||projeto.link.trim()||projeto.textoPronto.trim());
+  const cat=CATEGORIAS.find(c=>c.id===projeto.categoria);
+  return(
+    <div>
+      <h2 style={{fontSize:22,fontWeight:800,marginBottom:6}}>Sobre o que é o carrossel?</h2>
+      <p style={{color:"var(--text2)",marginBottom:22}}>
+        {cat?<span>Categoria: <b style={{color:"var(--purple)"}}>{cat.emoji} {cat.nome}</b> · </span>:null}
+        Preencha pelo menos um dos campos abaixo.
+      </p>
+      <Card style={{marginBottom:20}}>
+        <Field label="Tema do carrossel">
+          <textarea rows={3} style={{...inputStyle,resize:"vertical"}} value={projeto.tema}
+            placeholder="Ex.: O Instagram mudou o alcance de contas pequenas em 2026. O que muda e como aproveitar."
+            onChange={e=>update({tema:e.target.value})}/>
+        </Field>
+        <Field label="Link de matéria (opcional, a IA lê a página e usa como base)">
+          <input type="url" style={inputStyle} value={projeto.link}
+            placeholder="https://exemplo.com/materia"
+            onChange={e=>update({link:e.target.value})}/>
+        </Field>
+        <Field label="Texto pronto (opcional, a IA só adapta pro formato de slides, sem inventar)">
+          <textarea rows={5} style={{...inputStyle,resize:"vertical"}} value={projeto.textoPronto}
+            placeholder="Cole aqui um briefing, roteiro de vídeo ou texto que você já tem..."
+            onChange={e=>update({textoPronto:e.target.value})}/>
+        </Field>
+        <Field label="Quantidade de slides (contando capa e CTA)">
+          <div style={{display:"flex",alignItems:"center",gap:14}}>
+            <Btn variant="secondary" style={{padding:"8px 16px"}} onClick={()=>update({qtdSlides:Math.max(4,projeto.qtdSlides-1)})}>−</Btn>
+            <div style={{fontSize:22,fontWeight:800,minWidth:32,textAlign:"center"}}>{projeto.qtdSlides}</div>
+            <Btn variant="secondary" style={{padding:"8px 16px"}} onClick={()=>update({qtdSlides:Math.min(10,projeto.qtdSlides+1)})}>+</Btn>
+            <span style={{fontSize:12,color:"var(--text3)"}}>de 4 a 10 · padrão 8</span>
+          </div>
+        </Field>
+      </Card>
+      <div style={{display:"flex",justifyContent:"space-between"}}>
+        <Btn variant="secondary" onClick={back}>← Voltar</Btn>
+        <Btn onClick={next} disabled={!podeAvancar}>Continuar →</Btn>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Etapa 3 — Roteiro (capas → roteiro → edição)
+   ───────────────────────────────────────────── */
+function StepRoteiro({projeto,update,next,back}){
+  const [busy,setBusy]=useState("");   // "" | "capas" | "roteiro"
+  const [err,setErr]=useState("");
+
+  async function gerarCapas(){
+    setBusy("capas");setErr("");
+    try{
+      const out=await chamarIA({
+        system:PROMPT_BASE+"\n\n"+PROMPT_CATEGORIA[projeto.categoria],
+        userText:contextoDoProjeto(projeto)+`\n\nTAREFA: gere exatamente 3 opções de CAPA para este carrossel, com hooks psicológicos diferentes entre si (ex.: curiosidade, medo de ficar de fora, ganho concreto). Cada capa: headline de 8 a 12 palavras que para o scroll sozinha + subtítulo de 1 frase.`,
+        useWebFetch:!!projeto.link.trim(),
+        schema:SCHEMA_CAPAS,
+        maxTokens:8000,
+      });
+      update({capas:out.capas||[],capaIdx:null,slides:[],cta:null});
+    }catch(e){setErr(String(e.message||e));}
+    setBusy("");
+  }
+
+  async function gerarRoteiro(){
+    const capa=projeto.capas[projeto.capaIdx];
+    if(!capa) return;
+    setBusy("roteiro");setErr("");
+    try{
+      const internos=projeto.qtdSlides-2;
+      const out=await chamarIA({
+        system:PROMPT_BASE+"\n\n"+PROMPT_CATEGORIA[projeto.categoria],
+        userText:contextoDoProjeto(projeto)
+          +`\n\nCAPA JÁ ESCOLHIDA (slide 1, não recrie):\nHeadline: ${capa.headline}\nSubtítulo: ${capa.subtitulo}`
+          +`\n\nTAREFA: escreva os ${internos} slides internos (slide 2 até o slide ${projeto.qtdSlides-1}) alinhados a essa capa, e o slide final de CTA. O slide 2 reduz ceticismo e abre o loop. Devolva no campo "slides" exatamente ${internos} itens, na ordem.`,
+        useWebFetch:!!projeto.link.trim(),
+        schema:SCHEMA_ROTEIRO,
+        maxTokens:16000,
+      });
+      update({slides:out.slides||[],cta:out.cta||null});
+    }catch(e){setErr(String(e.message||e));}
+    setBusy("");
+  }
+
+  function setSlide(i,campo,valor){
+    const slides=projeto.slides.map((s,j)=>j===i?{...s,[campo]:valor}:s);
+    update({slides});
+  }
+  function setCapa(campo,valor){
+    const capas=projeto.capas.map((c,j)=>j===projeto.capaIdx?{...c,[campo]:valor}:c);
+    update({capas});
+  }
+
+  const capaEscolhida=projeto.capaIdx!=null?projeto.capas[projeto.capaIdx]:null;
+  const temRoteiro=projeto.slides.length>0&&projeto.cta;
+
+  return(
+    <div>
+      <h2 style={{fontSize:22,fontWeight:800,marginBottom:6}}>Roteiro</h2>
+      <p style={{color:"var(--text2)",marginBottom:22}}>Primeiro a IA sugere 3 capas. Você escolhe uma, ela escreve o roteiro completo, e você edita o que quiser.</p>
+      <ErrBox msg={err} onClose={()=>setErr("")}/>
+
+      {/* ── Bloco 1: capas ── */}
+      {projeto.capas.length===0?(
+        <Card style={{textAlign:"center",padding:36,marginBottom:20}}>
+          <Btn onClick={gerarCapas} disabled={!!busy}>
+            {busy==="capas"?<span><span className="spinner"/>Gerando capas...</span>:"✨ Gerar 3 opções de capa"}
+          </Btn>
+          <div style={{fontSize:12,color:"var(--text3)",marginTop:12}}>Usa a IA (Claude). Leva alguns segundos.</div>
+        </Card>
+      ):(
+        <div style={{marginBottom:24}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+            <div style={{fontWeight:800,fontSize:15}}>1. Escolha a capa</div>
+            <Btn variant="ghost" onClick={gerarCapas} disabled={!!busy}>{busy==="capas"?"Gerando...":"↻ Gerar outras 3"}</Btn>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:12}}>
+            {projeto.capas.map((c,i)=>(
+              <Card key={i} selected={projeto.capaIdx===i} onClick={()=>update({capaIdx:i})}>
+                <div style={{fontSize:11,fontWeight:700,color:projeto.capaIdx===i?"var(--purple)":"var(--text3)",marginBottom:8}}>OPÇÃO {i+1}{projeto.capaIdx===i?" · ESCOLHIDA":""}</div>
+                <div style={{fontWeight:800,fontSize:15,lineHeight:1.3,marginBottom:6}}>{c.headline}</div>
+                <div style={{fontSize:13,color:"var(--text2)"}}>{c.subtitulo}</div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Bloco 2: gerar roteiro ── */}
+      {capaEscolhida&&!temRoteiro&&(
+        <Card style={{textAlign:"center",padding:36,marginBottom:20}}>
+          <Btn onClick={gerarRoteiro} disabled={!!busy}>
+            {busy==="roteiro"?<span><span className="spinner"/>Escrevendo o roteiro...</span>:`✍️ Gerar roteiro completo (${projeto.qtdSlides} slides)`}
+          </Btn>
+        </Card>
+      )}
+
+      {/* ── Bloco 3: edição ── */}
+      {temRoteiro&&(
+        <div style={{marginBottom:24}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+            <div style={{fontWeight:800,fontSize:15}}>2. Revise e edite o roteiro</div>
+            <Btn variant="ghost" onClick={gerarRoteiro} disabled={!!busy}>{busy==="roteiro"?"Gerando...":"↻ Regenerar roteiro"}</Btn>
+          </div>
+
+          <Card style={{marginBottom:12,borderLeft:"5px solid var(--purple)"}}>
+            <div style={{fontSize:11,fontWeight:800,color:"var(--purple)",marginBottom:10}}>SLIDE 1 · CAPA</div>
+            <Field label="Headline">
+              <textarea rows={2} style={{...inputStyle,fontWeight:700,resize:"vertical"}} value={capaEscolhida.headline} onChange={e=>setCapa("headline",e.target.value)}/>
+            </Field>
+            <Field label="Subtítulo">
+              <input style={inputStyle} value={capaEscolhida.subtitulo} onChange={e=>setCapa("subtitulo",e.target.value)}/>
+            </Field>
+          </Card>
+
+          {projeto.slides.map((s,i)=>(
+            <Card key={i} style={{marginBottom:12}}>
+              <div style={{fontSize:11,fontWeight:800,color:"var(--text3)",marginBottom:10}}>SLIDE {i+2}</div>
+              <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+                <div style={{width:150}}>
+                  <Field label="Etiqueta">
+                    <input style={inputStyle} value={s.etiqueta} onChange={e=>setSlide(i,"etiqueta",e.target.value)}/>
+                  </Field>
+                </div>
+                <div style={{flex:1,minWidth:220}}>
+                  <Field label="Título">
+                    <textarea rows={2} style={{...inputStyle,fontWeight:700,resize:"vertical"}} value={s.titulo} onChange={e=>setSlide(i,"titulo",e.target.value)}/>
+                  </Field>
+                </div>
+              </div>
+              <Field label="Texto de apoio">
+                <textarea rows={2} style={{...inputStyle,resize:"vertical"}} value={s.texto} onChange={e=>setSlide(i,"texto",e.target.value)}/>
+              </Field>
+            </Card>
+          ))}
+
+          <Card style={{borderLeft:"5px solid var(--yellow)"}}>
+            <div style={{fontSize:11,fontWeight:800,color:"var(--text2)",marginBottom:10}}>SLIDE {projeto.qtdSlides} · CTA</div>
+            <Field label="Título">
+              <textarea rows={2} style={{...inputStyle,fontWeight:700,resize:"vertical"}} value={projeto.cta.titulo} onChange={e=>update({cta:{...projeto.cta,titulo:e.target.value}})}/>
+            </Field>
+            <Field label="Texto">
+              <textarea rows={2} style={{...inputStyle,resize:"vertical"}} value={projeto.cta.texto} onChange={e=>update({cta:{...projeto.cta,texto:e.target.value}})}/>
+            </Field>
+            <Field label="Palavra-chave do comentário (vira o gatilho da automação na ResponDM)">
+              <input style={{...inputStyle,fontWeight:800,textTransform:"uppercase",maxWidth:240}} value={projeto.cta.palavra_chave} onChange={e=>update({cta:{...projeto.cta,palavra_chave:e.target.value.toUpperCase()}})}/>
+            </Field>
+          </Card>
+        </div>
+      )}
+
+      <div style={{display:"flex",justifyContent:"space-between"}}>
+        <Btn variant="secondary" onClick={back}>← Voltar</Btn>
+        <Btn onClick={next} disabled={!temRoteiro}>Avançar para os Slides →</Btn>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Etapa 4 — Slides (Fase 3, ainda não construída)
+   ───────────────────────────────────────────── */
+function StepSlides({back}){
+  return(
+    <div>
+      <h2 style={{fontSize:22,fontWeight:800,marginBottom:6}}>Slides</h2>
+      <div style={{background:"var(--surface)",border:"1.5px dashed var(--border2)",borderRadius:16,padding:48,textAlign:"center",color:"var(--text3)",marginBottom:20}}>
+        <div style={{fontSize:16,fontWeight:700,color:"var(--text2)",marginBottom:8}}>Motor visual em construção (Fase 3)</div>
+        <div>Aqui os slides serão desenhados em 1080×1350 com os templates da marca,<br/>com opção de fundo por template, imagem gerada por IA ou upload.</div>
+      </div>
+      <Btn variant="secondary" onClick={back}>← Voltar ao roteiro</Btn>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   App
+   ───────────────────────────────────────────── */
+const PROJETO_VAZIO={categoria:null,tema:"",link:"",textoPronto:"",qtdSlides:8,capas:[],capaIdx:null,slides:[],cta:null};
 
 function App(){
   const [authReady,setAuthReady]=useState(false);
   const [user,setUser]=useState(null);
   const [denied,setDenied]=useState(false);
   const [step,setStep]=useState(0);
+  const [projeto,setProjeto]=useState(()=>{
+    try{const d=localStorage.getItem(DRAFT_KEY);if(d) return {...PROJETO_VAZIO,...JSON.parse(d)};}catch(e){}
+    return {...PROJETO_VAZIO};
+  });
 
   useEffect(()=>{
     const unsub=fbAuth.onAuthStateChanged(u=>{
@@ -166,14 +563,27 @@ function App(){
     return unsub;
   },[]);
 
+  useEffect(()=>{
+    try{localStorage.setItem(DRAFT_KEY,JSON.stringify(projeto));}catch(e){}
+  },[projeto]);
+
+  function update(patch){setProjeto(p=>({...p,...patch}));}
+  function novo(){
+    if(projeto.slides.length&&!window.confirm("Começar um carrossel novo? O rascunho atual será apagado."))return;
+    setProjeto({...PROJETO_VAZIO});setStep(0);
+  }
+
   if(!authReady) return null;
   if(denied) return <DeniedScreen/>;
   if(!user) return <LoginScreen/>;
 
   return(
     <div>
-      <TopBar step={step} setStep={setStep} user={user}/>
-      <StepPlaceholder name={STEPS[step]}/>
+      <TopBar step={step} setStep={setStep} onNovo={novo}/>
+      {step===0&&<StepCategoria projeto={projeto} update={update} next={()=>setStep(1)}/>}
+      {step===1&&<StepTema projeto={projeto} update={update} next={()=>setStep(2)} back={()=>setStep(0)}/>}
+      {step===2&&<StepRoteiro projeto={projeto} update={update} next={()=>setStep(3)} back={()=>setStep(1)}/>}
+      {step===3&&<StepSlides back={()=>setStep(2)}/>}
     </div>
   );
 }
