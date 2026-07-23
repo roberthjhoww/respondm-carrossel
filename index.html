@@ -11,6 +11,7 @@
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.7/babel.min.js"></script>
+<script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <!-- Firebase SDK (compat: expõe window.firebase, funciona com o Babel inline) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -65,10 +66,10 @@ const STEPS=["Categoria","Tema","Roteiro","Slides"];
 const DRAFT_KEY="rdm_carrossel_draft_v1";
 
 const CATEGORIAS=[
-  {id:"noticias",emoji:"📰",nome:"Notícias e novidades",desc:"Atualizações do Instagram, redes sociais e IA. Conteúdo tipo \"acabou de mudar\"."},
-  {id:"curiosidades",emoji:"🤯",nome:"Curiosidades e dados",desc:"Números e fatos pouco conhecidos que geram \"eu não sabia disso\"."},
-  {id:"tutoriais",emoji:"📋",nome:"Tutoriais e passo a passo",desc:"Como fazer algo, em passos numerados. Formato bem salvável."},
-  {id:"erros_mitos",emoji:"⚠️",nome:"Erros, mitos e bastidores",desc:"Quebra de crença errada: mito vs verdade, erro vs certo, antes/depois."},
+  {id:"noticias",emoji:"📰",nome:"Notícias e novidades",desc:"Atualizações do Instagram, redes sociais e IA. Conteúdo tipo \"acabou de mudar\".",chip:"NOVIDADE",accent:{bg:"#EF4444",fg:"#FFFFFF"}},
+  {id:"curiosidades",emoji:"🤯",nome:"Curiosidades e dados",desc:"Números e fatos pouco conhecidos que geram \"eu não sabia disso\".",chip:"CURIOSIDADE",accent:{bg:"#FEDB00",fg:"#1A1A2E"}},
+  {id:"tutoriais",emoji:"📋",nome:"Tutoriais e passo a passo",desc:"Como fazer algo, em passos numerados. Formato bem salvável.",chip:"TUTORIAL",accent:{bg:"#22C55E",fg:"#FFFFFF"}},
+  {id:"erros_mitos",emoji:"⚠️",nome:"Erros, mitos e bastidores",desc:"Quebra de crença errada: mito vs verdade, erro vs certo, antes/depois.",chip:"MITOS",accent:{bg:"#7447E1",fg:"#FFFFFF"}},
 ];
 
 /* ─────────────────────────────────────────────
@@ -539,16 +540,332 @@ function StepRoteiro({projeto,update,next,back}){
 }
 
 /* ─────────────────────────────────────────────
-   Etapa 4 — Slides (Fase 3, ainda não construída)
+   Etapa 4 — Slides: motor visual em Canvas (1080×1350)
+   Capa e CTA escuros (balões de DM), internos claros.
    ───────────────────────────────────────────── */
-function StepSlides({back}){
+const W=1080,H=1350,DARK="#1A1A2E",ROXO="#7447E1",AMARELO="#FEDB00",LAVANDA="#C4B0F5";
+
+function montarSlides(projeto){
+  const capa=projeto.capaIdx!=null?projeto.capas[projeto.capaIdx]:null;
+  if(!capa||!projeto.cta||!projeto.slides.length) return [];
+  const list=[{key:"capa",tipo:"capa",headline:capa.headline,sub:capa.subtitulo}];
+  projeto.slides.forEach((s,i)=>list.push({key:"s"+i,tipo:"interno",etiqueta:s.etiqueta,titulo:s.titulo,texto:s.texto}));
+  list.push({key:"cta",tipo:"cta",titulo:projeto.cta.titulo,texto:projeto.cta.texto,keyword:projeto.cta.palavra_chave});
+  return list;
+}
+
+function rr(ctx,x,y,w,h,r){
+  r=Math.min(r,h/2,w/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function quebrar(ctx,txt,maxW){
+  const words=String(txt||"").trim().split(/\s+/);const lines=[];let cur="";
+  for(const w of words){const t=cur?cur+" "+w:w;
+    if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=w;}else cur=t;}
+  if(cur)lines.push(cur);
+  return lines;
+}
+function ajustarFonte(ctx,txt,weight,maxW,start,min,maxLines){
+  let size=start;
+  while(size>min){ctx.font=weight+" "+size+"px Inter";if(quebrar(ctx,txt,maxW).length<=maxLines)break;size-=4;}
+  ctx.font=weight+" "+size+"px Inter";
+  return {size,lines:quebrar(ctx,txt,maxW)};
+}
+function desenharLinhas(ctx,lines,x,y,lineH,align){
+  ctx.textAlign=align||"left";
+  lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lineH));
+  ctx.textAlign="left";
+  return y+lines.length*lineH;
+}
+function pill(ctx,cx,y,texto,bg,fg,size,center){
+  ctx.font="800 "+size+"px Inter";
+  const tw=ctx.measureText(texto).width,padX=size*1.2,h=size*2.2;
+  const w=tw+padX*2,x=center?cx-w/2:cx;
+  ctx.fillStyle=bg;rr(ctx,x,y,w,h,h/2);ctx.fill();
+  ctx.fillStyle=fg;ctx.textBaseline="middle";ctx.textAlign="center";
+  ctx.fillText(texto,x+w/2,y+h/2+size*0.06);
+  ctx.textBaseline="alphabetic";ctx.textAlign="left";
+  return {x,w,h};
+}
+function balaoDigitando(ctx,cx,y,center){
+  const w=190,h=84,x=center?cx-w/2:cx;
+  ctx.fillStyle=ROXO;rr(ctx,x,y,w,h,42);ctx.fill();
+  ctx.beginPath();ctx.moveTo(x+18,y+h-4);ctx.lineTo(x-6,y+h+22);ctx.lineTo(x+52,y+h-4);ctx.closePath();ctx.fill();
+  ctx.fillStyle="rgba(255,255,255,.95)";
+  for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(x+w/2+(i-1)*34,y+h/2,9,0,7);ctx.fill();}
+}
+function fundoFoto(ctx,img,forte){
+  const s=Math.max(W/img.width,H/img.height);
+  const dw=img.width*s,dh=img.height*s;
+  ctx.drawImage(img,(W-dw)/2,(H-dh)/2,dw,dh);
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,"rgba(26,26,46,"+(forte?.55:.45)+")");
+  g.addColorStop(.55,"rgba(26,26,46,"+(forte?.8:.7)+")");
+  g.addColorStop(1,"rgba(26,26,46,.95)");
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+}
+function gridEscuro(ctx){
+  ctx.strokeStyle="rgba(196,176,245,0.06)";ctx.lineWidth=1;
+  for(let x=0;x<=W;x+=44){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<=H;y+=44){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+}
+function pontosClaros(ctx){
+  ctx.fillStyle="rgba(116,71,225,0.10)";
+  for(let x=44;x<W;x+=44)for(let y=44;y<H;y+=44){ctx.beginPath();ctx.arc(x,y,2,0,7);ctx.fill();}
+}
+function corEtiqueta(et,accent){
+  const up=String(et||"").toUpperCase();
+  if(["MITO","ERRO","ANTES","CUSTO"].some(k=>up.startsWith(k))) return {bg:"#E53935",fg:"#fff"};
+  if(["APLIQUE","CONTEXTO","RESUMO"].some(k=>up.startsWith(k))) return {bg:DARK,fg:"#fff"};
+  if(["DICA","PERGUNTA","CRENÇA"].some(k=>up.startsWith(k))) return {bg:LAVANDA,fg:DARK};
+  return {bg:accent.bg,fg:accent.fg};
+}
+function metaBar(ctx,idx,total,accent,dark,semSeta){
+  ctx.font="600 28px Inter";
+  ctx.fillStyle=dark?"rgba(255,255,255,.6)":"#A49EC4";
+  ctx.fillText((idx+1)+"/"+total,80,H-64);
+  if(!semSeta){
+    if(idx===0){ctx.font="800 30px Inter";ctx.fillStyle=AMARELO;ctx.textAlign="right";ctx.fillText("ARRASTA →",W-80,H-64);ctx.textAlign="left";}
+    else{ctx.font="800 34px Inter";ctx.fillStyle=dark?AMARELO:ROXO;ctx.textAlign="right";ctx.fillText("→",W-80,H-62);ctx.textAlign="left";}
+  }
+  ctx.fillStyle=dark?"rgba(255,255,255,.12)":"rgba(116,71,225,.15)";
+  ctx.fillRect(0,H-10,W,10);
+  ctx.fillStyle=accent.bg;ctx.fillRect(0,H-10,W*(idx+1)/total,10);
+}
+function topo(ctx,chip,accent,dark){
+  ctx.font="600 28px Inter";
+  ctx.fillStyle=dark?"rgba(255,255,255,.65)":"#A49EC4";
+  ctx.fillText("@respon_dm",80,106);
+  ctx.font="800 24px Inter";
+  const tw=ctx.measureText(chip).width,padX=28,h=52,w=tw+padX*2,x=W-80-w;
+  ctx.fillStyle=accent.bg;rr(ctx,x,72,w,h,26);ctx.fill();
+  ctx.fillStyle=accent.fg;ctx.textBaseline="middle";ctx.textAlign="center";
+  ctx.fillText(chip,x+w/2,72+h/2+1);
+  ctx.textBaseline="alphabetic";ctx.textAlign="left";
+}
+
+function desenharSlide(ctx,sp,opts){
+  const {idx,total,accent,chip,foto}=opts;
+  ctx.clearRect(0,0,W,H);
+
+  if(sp.tipo==="capa"||sp.tipo==="cta"){
+    ctx.fillStyle=DARK;ctx.fillRect(0,0,W,H);
+    if(foto)fundoFoto(ctx,foto,true);else gridEscuro(ctx);
+    topo(ctx,chip,accent,true);
+
+    if(sp.tipo==="capa"){
+      balaoDigitando(ctx,80,190,false);
+      const t=ajustarFonte(ctx,String(sp.headline||"").toUpperCase(),"900",920,88,54,5);
+      ctx.fillStyle="#FFFFFF";
+      const fim=desenharLinhas(ctx,t.lines,80,470+t.size,t.size*1.14);
+      ctx.font="500 38px Inter";ctx.fillStyle=LAVANDA;
+      desenharLinhas(ctx,quebrar(ctx,sp.sub,880),80,fim+34,56);
+      metaBar(ctx,idx,total,accent,true);
+    }else{
+      balaoDigitando(ctx,W/2,240,true);
+      const t=ajustarFonte(ctx,String(sp.titulo||"").toUpperCase(),"900",900,76,48,4);
+      ctx.fillStyle="#FFFFFF";
+      const fim=desenharLinhas(ctx,t.lines,W/2,430+t.size,t.size*1.14,"center");
+      ctx.font="400 40px Inter";ctx.fillStyle=LAVANDA;
+      const fim2=desenharLinhas(ctx,quebrar(ctx,sp.texto,860),W/2,fim+40,60,"center");
+      ctx.font="700 30px Inter";ctx.fillStyle="rgba(255,255,255,.7)";ctx.textAlign="center";
+      ctx.fillText("COMENTA AÍ EMBAIXO 👇",W/2,Math.max(fim2+70,880));
+      pill(ctx,W/2,Math.max(fim2+100,910),String(sp.keyword||"").toUpperCase(),AMARELO,DARK,60,true);
+      metaBar(ctx,idx,total,accent,true,true);
+    }
+    return;
+  }
+
+  // Slide interno (claro)
+  ctx.fillStyle="#FFFFFF";ctx.fillRect(0,0,W,H);
+  const temFoto=!!foto;
+  if(temFoto)fundoFoto(ctx,foto,false);else pontosClaros(ctx);
+  ctx.fillStyle=accent.bg;ctx.fillRect(0,0,14,H);
+  topo(ctx,chip,accent,temFoto);
+
+  const mx=96;
+  const etiq=String(sp.etiqueta||"").trim();
+
+  // Mede o bloco inteiro antes de desenhar, pra distribuir na vertical (evita slide com metade vazia)
+  const t=ajustarFonte(ctx,String(sp.titulo||"").toUpperCase(),"800",W-mx-90,64,42,4);
+  let corpo=38,lineH=57;
+  ctx.font="400 "+corpo+"px Inter";
+  let linhas=quebrar(ctx,sp.texto,W-mx-90);
+  const alturaBloco=()=> (etiq?124:30)+t.size+t.lines.length*t.size*1.16+96+corpo+linhas.length*lineH;
+  if(alturaBloco()>940){corpo=32;lineH=48;ctx.font="400 32px Inter";linhas=quebrar(ctx,sp.texto,W-mx-90);}
+
+  let y=200+Math.max(0,(960-alturaBloco())*0.35);
+  if(etiq){
+    const c=corEtiqueta(etiq,accent);
+    pill(ctx,mx,y,etiq.toUpperCase(),c.bg,c.fg,30,false);
+    y+=124;
+  }else y+=30;
+
+  ctx.font="800 "+t.size+"px Inter";
+  ctx.fillStyle=temFoto?"#FFFFFF":"#1A1630";
+  const fimTitulo=desenharLinhas(ctx,t.lines,mx,y+t.size,t.size*1.16);
+
+  ctx.fillStyle=accent.bg;rr(ctx,mx,fimTitulo+26,150,10,5);ctx.fill();
+
+  ctx.font="400 "+corpo+"px Inter";
+  ctx.fillStyle=temFoto?"#E7E2F7":"#4A4A4A";
+  desenharLinhas(ctx,linhas,mx,fimTitulo+96+corpo,lineH);
+
+  metaBar(ctx,idx,total,accent,temFoto);
+}
+
+const imgCache={};
+function loadImage(dataURL){
+  if(imgCache[dataURL]) return Promise.resolve(imgCache[dataURL]);
+  return new Promise((res,rej)=>{
+    const img=new Image();
+    img.onload=()=>{imgCache[dataURL]=img;res(img);};
+    img.onerror=rej;
+    img.src=dataURL;
+  });
+}
+function promptPadrao(sp,projeto){
+  const assunto=sp.tipo==="interno"?sp.titulo:(projeto.tema||sp.headline||sp.titulo||"");
+  return "Fundo fotográfico vertical, proporção 4:5 (retrato), para um slide de carrossel do Instagram. PROIBIDO qualquer texto, letra, número ou logotipo na imagem. Cena relacionada a: "+assunto+". Estilo: fotografia profissional, tons escuros, iluminação dramática com luz roxa, clima tech.";
+}
+
+function StepSlides({projeto,fotos,setFotos,back}){
+  const [thumbs,setThumbs]=useState([]);
+  const [sel,setSel]=useState(null);
+  const [busyFoto,setBusyFoto]=useState(false);
+  const [promptFoto,setPromptFoto]=useState("");
+  const [err,setErr]=useState("");
+  const [renderizando,setRenderizando]=useState(false);
+
+  const specs=montarSlides(projeto);
+  const cat=CATEGORIAS.find(c=>c.id===projeto.categoria)||CATEGORIAS[3];
+
+  useEffect(()=>{
+    if(!specs.length) return;
+    let vivo=true;
+    setRenderizando(true);
+    (async()=>{
+      try{
+        await Promise.all(["900 80px Inter","800 60px Inter","600 28px Inter","500 38px Inter","400 38px Inter"]
+          .map(f=>document.fonts.load(f)));
+      }catch(e){}
+      const urls=[];
+      for(let i=0;i<specs.length;i++){
+        const sp=specs[i];
+        const cv=document.createElement("canvas");cv.width=W;cv.height=H;
+        let img=null;
+        if(fotos[sp.key]){try{img=await loadImage(fotos[sp.key]);}catch(e){}}
+        desenharSlide(cv.getContext("2d"),sp,{idx:i,total:specs.length,accent:cat.accent,chip:cat.chip,foto:img});
+        urls.push(cv.toDataURL("image/png"));
+      }
+      if(vivo){setThumbs(urls);setRenderizando(false);}
+    })();
+    return()=>{vivo=false;};
+  },[JSON.stringify(projeto.slides),JSON.stringify(projeto.cta),projeto.capaIdx,JSON.stringify(projeto.capas),projeto.categoria,fotos]);
+
+  useEffect(()=>{
+    if(sel!=null&&specs[sel]) setPromptFoto(promptPadrao(specs[sel],projeto));
+  },[sel]);
+
+  if(!specs.length){
+    return(
+      <div>
+        <h2 style={{fontSize:22,fontWeight:800,marginBottom:6}}>Slides</h2>
+        <div style={{background:"var(--surface)",border:"1.5px dashed var(--border2)",borderRadius:16,padding:48,textAlign:"center",color:"var(--text3)",marginBottom:20}}>
+          Gere e aprove o roteiro na etapa anterior primeiro.
+        </div>
+        <Btn variant="secondary" onClick={back}>← Voltar ao roteiro</Btn>
+      </div>
+    );
+  }
+
+  async function gerarFotoIA(){
+    if(sel==null) return;
+    setBusyFoto(true);setErr("");
+    try{
+      const r=await fetch(WORKER_URL+"/imagem",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:promptFoto})});
+      const data=await r.json();
+      if(!r.ok) throw new Error(data?.error?.message||("Erro "+r.status));
+      const parts=data?.candidates?.[0]?.content?.parts||[];
+      const part=parts.find(p=>(p.inlineData&&p.inlineData.data)||(p.inline_data&&p.inline_data.data));
+      if(!part) throw new Error("A IA não retornou imagem. Tente ajustar o prompt.");
+      const inline=part.inlineData||part.inline_data;
+      setFotos({...fotos,[specs[sel].key]:"data:"+(inline.mimeType||inline.mime_type||"image/png")+";base64,"+inline.data});
+    }catch(e){setErr(String(e.message||e));}
+    setBusyFoto(false);
+  }
+  function subirFoto(ev){
+    const f=ev.target.files&&ev.target.files[0];
+    if(!f||sel==null) return;
+    const reader=new FileReader();
+    reader.onload=()=>setFotos({...fotos,[specs[sel].key]:reader.result});
+    reader.readAsDataURL(f);
+    ev.target.value="";
+  }
+  function removerFoto(){
+    if(sel==null) return;
+    const novo={...fotos};delete novo[specs[sel].key];setFotos(novo);
+  }
+  function baixarSlide(i){
+    const a=document.createElement("a");
+    a.href=thumbs[i];a.download="respondm_slide_"+String(i+1).padStart(2,"0")+".png";a.click();
+  }
+  async function baixarZip(){
+    const zip=new JSZip();
+    thumbs.forEach((t,i)=>zip.file("respondm_slide_"+String(i+1).padStart(2,"0")+".png",t.split(",")[1],{base64:true}));
+    const blob=await zip.generateAsync({type:"blob"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download="carrossel_respondm.zip";a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
   return(
     <div>
-      <h2 style={{fontSize:22,fontWeight:800,marginBottom:6}}>Slides</h2>
-      <div style={{background:"var(--surface)",border:"1.5px dashed var(--border2)",borderRadius:16,padding:48,textAlign:"center",color:"var(--text3)",marginBottom:20}}>
-        <div style={{fontSize:16,fontWeight:700,color:"var(--text2)",marginBottom:8}}>Motor visual em construção (Fase 3)</div>
-        <div>Aqui os slides serão desenhados em 1080×1350 com os templates da marca,<br/>com opção de fundo por template, imagem gerada por IA ou upload.</div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,marginBottom:6}}>
+        <h2 style={{fontSize:22,fontWeight:800}}>Seus slides</h2>
+        <Btn onClick={baixarZip} disabled={renderizando||!thumbs.length}>⬇ Baixar todos (.zip)</Btn>
       </div>
+      <p style={{color:"var(--text2)",marginBottom:22}}>Clique num slide pra colocar imagem de fundo (IA ou upload). O texto é sempre desenhado em código, nítido.</p>
+      <ErrBox msg={err} onClose={()=>setErr("")}/>
+      {renderizando&&<div style={{fontSize:13,color:"var(--text3)",marginBottom:12}}>Desenhando slides...</div>}
+
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:14,marginBottom:22}}>
+        {thumbs.map((t,i)=>(
+          <div key={i}>
+            <img src={t} onClick={()=>setSel(sel===i?null:i)} style={{width:"100%",borderRadius:12,cursor:"pointer",display:"block",
+              border:"3px solid "+(sel===i?"var(--purple)":"var(--border)"),boxShadow:"var(--shadow-sm)"}}/>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
+              <span style={{fontSize:11,fontWeight:700,color:"var(--text3)"}}>{i+1} · {specs[i].tipo.toUpperCase()}{fotos[specs[i].key]?" · 🖼":""}</span>
+              <button onClick={()=>baixarSlide(i)} title="Baixar PNG" style={{border:"none",background:"none",cursor:"pointer",fontSize:14,color:"var(--purple)",fontWeight:800}}>⬇</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {sel!=null&&specs[sel]&&(
+        <Card style={{marginBottom:22,borderLeft:"5px solid var(--purple)"}}>
+          <div style={{fontWeight:800,fontSize:15,marginBottom:14}}>Imagem de fundo do slide {sel+1}</div>
+          <Field label="Prompt da imagem (edite à vontade antes de gerar)">
+            <textarea rows={3} style={{...inputStyle,resize:"vertical"}} value={promptFoto} onChange={e=>setPromptFoto(e.target.value)}/>
+          </Field>
+          <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+            <Btn onClick={gerarFotoIA} disabled={busyFoto}>
+              {busyFoto?<span><span className="spinner"/>Gerando imagem...</span>:"✨ Gerar com IA"}
+            </Btn>
+            <label style={{display:"inline-block"}}>
+              <span style={{display:"inline-block",padding:"12px 22px",borderRadius:12,fontWeight:700,fontSize:14,cursor:"pointer",border:"1.5px solid var(--border2)",background:"var(--surface)"}}>📁 Subir imagem</span>
+              <input type="file" accept="image/*" onChange={subirFoto} style={{display:"none"}}/>
+            </label>
+            {fotos[specs[sel].key]&&<Btn variant="secondary" onClick={removerFoto}>Remover imagem</Btn>}
+          </div>
+          <div style={{fontSize:11,color:"var(--text3)",marginTop:12}}>As imagens não ficam salvas no rascunho: se fechar a aba, será preciso gerar ou subir de novo.</div>
+        </Card>
+      )}
+
       <Btn variant="secondary" onClick={back}>← Voltar ao roteiro</Btn>
     </div>
   );
@@ -564,6 +881,7 @@ function App(){
   const [user,setUser]=useState(null);
   const [denied,setDenied]=useState(false);
   const [step,setStep]=useState(0);
+  const [fotos,setFotos]=useState({}); // imagens de fundo por slide (só em memória, dataURLs pesam demais pro localStorage)
   const [projeto,setProjeto]=useState(()=>{
     try{const d=localStorage.getItem(DRAFT_KEY);if(d) return {...PROJETO_VAZIO,...JSON.parse(d)};}catch(e){}
     return {...PROJETO_VAZIO};
@@ -590,7 +908,7 @@ function App(){
   function update(patch){setProjeto(p=>({...p,...patch}));}
   function novo(){
     if(projeto.slides.length&&!window.confirm("Começar um carrossel novo? O rascunho atual será apagado."))return;
-    setProjeto({...PROJETO_VAZIO});setStep(0);
+    setProjeto({...PROJETO_VAZIO});setFotos({});setStep(0);
   }
 
   if(!authReady) return null;
@@ -603,7 +921,7 @@ function App(){
       {step===0&&<StepCategoria projeto={projeto} update={update} next={()=>setStep(1)}/>}
       {step===1&&<StepTema projeto={projeto} update={update} next={()=>setStep(2)} back={()=>setStep(0)}/>}
       {step===2&&<StepRoteiro projeto={projeto} update={update} next={()=>setStep(3)} back={()=>setStep(1)}/>}
-      {step===3&&<StepSlides back={()=>setStep(2)}/>}
+      {step===3&&<StepSlides projeto={projeto} fotos={fotos} setFotos={setFotos} back={()=>setStep(2)}/>}
     </div>
   );
 }
