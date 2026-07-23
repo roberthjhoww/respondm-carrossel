@@ -81,33 +81,53 @@ A ResponDM é um SaaS brasileiro de automação de interações no Instagram pel
 
 PÚBLICO: criadores de conteúdo, infoprodutores, agências e negócios locais brasileiros que querem crescer no Instagram sem contratar equipe.
 
-TOM: criador experiente que vive isso todos os dias, não empresa se vendendo. Português brasileiro coloquial mas inteligente. Frases curtas. Autoridade sem arrogância.
+TOM: criador experiente que vive isso todos os dias, não empresa se vendendo. Português brasileiro coloquial mas inteligente. Frases curtas. Conversa, não palestra. Autoridade sem arrogância.
 
-REGRAS DE CADA SLIDE:
+PARA QUE ALGORITMO VOCÊ ESCREVE (julho/2026):
+- O sinal nº 1 do Instagram é a pessoa ENVIAR o post por DM pra um amigo. Todo carrossel precisa passar no teste do DM: "alguém mandaria isso pra alguém específico?". Se não, refaça.
+- O 2º sinal é salvar o post. Conteúdo de referência (checklist, resumo, framework) é o que mais gera save.
+- Carrossel ranqueia por taxa de conclusão: cada slide precisa segurar a pessoa até o último.
+
+REGRAS DA CAPA (slide 1):
+- A capa anuncia o PAYOFF (o que a pessoa ganha, perde ou descobre), NUNCA o assunto. Errado: "Algoritmo do Instagram em 2026". Certo: "Seu alcance caiu 40% e a causa não é o que você pensa".
+- Headline: 6 a 12 palavras, 1 ideia, 1 gatilho psicológico só (curiosidade, FOMO/erro, ganho, defesa, alívio ou descrença/contrário). Empilhar gatilhos na mesma frase vira ruído.
+- A palavra que o público pesquisaria sobre o tema deve estar escrita na headline ou no subtítulo.
+- Números: prefira ímpares e quebrados ("7 erros", "R$ 4.830") a redondos.
+- Subtítulo: 1 frase que neutraliza a objeção principal ("mesmo sem X") ou aumenta a tensão.
+
+REGRAS DE CADA SLIDE INTERNO:
 - 1 ideia por slide, com pelo menos um dado, número, mecanismo ou situação concreta.
-- Título de slide: até 12 palavras, provoca leitura em vez de descrever o slide.
-- Texto de apoio: 1 a 2 frases curtas que adicionam algo novo (nunca continuação óbvia do título).
-- Quando a ResponDM aparecer como solução, nomeie o mecanismo concreto (ex: "a automação por comentário entrega o PDF no direct"), nunca benefício vago.
-- A ResponDM não precisa aparecer em todo slide nem em todo carrossel.
+- Título: até 10 palavras, provoca leitura em vez de descrever.
+- Texto de apoio: 1 a 2 frases, 15 a 25 palavras, que adicionam algo novo (nunca continuação óbvia do título). O slide inteiro nunca passa de 40 palavras: a janela de leitura é 1,5 segundo.
+- Etiqueta = mini-headline de sinalização ("ERRO 3", "PASSO 2", "DADO"), nunca enfeite.
+- Cada slide entrega uma micro-revelação completa E abre curiosidade pro próximo. Quando couber, o texto de apoio termina puxando o próximo slide (ex: "e o pior erro é o próximo").
+- ESCALADA: os slides vão do bom pro melhor. O insight mais forte do carrossel fica no FIM do desenvolvimento, nunca no começo.
+- Em carrosséis com 5+ slides internos, o ÚLTIMO slide interno é um resumo salvável (checklist ou recap de tudo), com etiqueta RESUMO.
+- Em carrosséis de 8+ slides no total, um slide do MEIO pode pedir naturalmente pra salvar o post (nunca no final).
+- Quando a ResponDM aparecer como solução, nomeie o mecanismo concreto (ex: "a automação por comentário entrega o PDF no direct"), nunca benefício vago. Ela não precisa aparecer em todo carrossel.
+
+CTA FINAL:
+- UM pedido só: comentar UMA palavra-chave em maiúsculas pra receber algo no direct (o post vira demonstração da própria ResponDM).
+- O título do CTA fecha o círculo com a promessa da capa (loop-back), não introduz assunto novo.
 
 PROIBIDO (nunca use):
 - travessão (o caractere —) em qualquer texto
 - "Não é sobre X, é sobre Y" / "No mundo de hoje" / "Mais do que nunca" / "cada vez mais" / "de forma eficiente" / "potencializar" / "alavancar" / "transformar seu negócio" / "escalar seu negócio" / "presença digital" / "jornada do cliente" / "chegou a hora" / "não perca mais tempo" / "solução completa" / "resultados incríveis" / "impacto real"
 - benefício sem mecanismo que o explique
-- headline que descreve o conteúdo em vez de provocar
+- headline que anuncia o assunto em vez do payoff
 - conclusão óbvia embalada como insight
 
-ESTRUTURA GERAL: slide 1 é a capa (hook). Slide 2 reduz ceticismo e abre o loop ("nos próximos X slides você vai ver..."). Slides internos desenvolvem. Último slide é o CTA: pedir para comentar UMA palavra-chave para receber algo no direct (o post vira demonstração da própria ResponDM). A palavra-chave deve ser UMA palavra em maiúsculas relacionada ao tema.`;
+ESTRUTURA GERAL: slide 1 é a capa (hook de payoff). Slide 2 reduz ceticismo e abre o loop ("nos próximos X slides você vai ver..."). Desenvolvimento em escalada. Resumo salvável quando houver 5+ slides internos. Último slide é o CTA com loop-back.`;
 
 const PROMPT_CATEGORIA={
   noticias:`CATEGORIA: NOTÍCIA/NOVIDADE.
-Tom "acabou de mudar", informação fresca, zero enrolação. Estrutura: capa com a mudança + urgência; slide 2 contextualiza o que mudou e abre o loop; desenvolvimento com o que muda na prática (datas, números, quem é afetado); penúltimo slide interno mostra como aproveitar a mudança; CTA final. Etiquetas sugeridas por slide: NOVIDADE, MUDOU, CONTEXTO, IMPACTO, APLIQUE.`,
+Tom "acabou de mudar", informação fresca, zero enrolação. Notícia viraliza por SHARE: a capa deve dar vontade de mandar pra alguém que precisa saber disso ("manda pra quem posta todo dia"). Estrutura: capa com o payoff da mudança (o que a pessoa ganha/perde com ela) + urgência com data; slide 2 contextualiza o que mudou e abre o loop; desenvolvimento com o que muda na prática (datas, números, quem é afetado), em escalada; o slide interno final mostra como aproveitar a mudança antes da maioria; CTA final. Etiquetas sugeridas: NOVIDADE, MUDOU, CONTEXTO, IMPACTO, APLIQUE.`,
   curiosidades:`CATEGORIA: CURIOSIDADE/DADO CHOCANTE.
-Estrutura: capa com o dado mais chocante (número grande em destaque no título); slide 2 promete o contexto e abre o loop; desenvolvimento alterna dado (etiqueta DADO) e o que ele significa (etiqueta CONTEXTO); fechamento com aplicação prática (etiqueta DICA ou APLIQUE); CTA final.`,
+Dado chocante é o formato nº 1 em SHARES: escreva cada dado pra dar vontade de mandar pra um amigo ("olha isso"). Estrutura: capa com o dado mais chocante (número ímpar/quebrado em destaque na headline); slide 2 promete o contexto e abre o loop; desenvolvimento alterna dado (etiqueta DADO) e o que ele significa na prática (etiqueta CONTEXTO), guardando o dado mais absurdo pro fim; fechamento com aplicação prática (etiqueta APLIQUE); CTA final.`,
   tutoriais:`CATEGORIA: TUTORIAL/PASSO A PASSO.
-Estrutura: capa com a promessa específica do resultado; slide 2 diz o que a pessoa vai conseguir fazer e abre o loop; desenvolvimento em passos numerados (etiquetas "PASSO 1", "PASSO 2"...), cada passo com UMA ação concreta executável; último slide interno é um resumo salvável de todos os passos (etiqueta RESUMO); CTA final. Priorize o formato salvável.`,
+Tutorial é o formato nº 1 em SAVES: o carrossel inteiro deve valer como material de consulta. Estrutura: capa com a promessa específica do resultado + prazo ou esforço ("em 10 minutos", "sem ferramenta paga"); slide 2 diz o que a pessoa vai conseguir fazer e abre o loop; desenvolvimento em passos numerados (etiquetas "PASSO 1", "PASSO 2"...), cada passo com UMA ação concreta executável e um detalhe que só quem faz sabe; último slide interno é o resumo salvável de todos os passos (etiqueta RESUMO); CTA final.`,
   erros_mitos:`CATEGORIA: ERROS/MITOS/BASTIDORES.
-Fórmula PAS (dor, agitação, solução). Estrutura: capa provoca com o erro ou mito mais comum do público; slide 2 reduz ceticismo e abre o loop; desenvolvimento em pares: um slide com o mito/erro (etiqueta MITO ou ERRO) seguido de um slide com a verdade/correção (etiqueta VERDADE ou CERTO); fechamento com a virada de perspectiva; CTA final.`,
+Fórmula PAS (dor, agitação, solução). Take contrário gera SHARE e comentário: a capa deve desafiar uma crença que o público defende. Estrutura: capa provoca com o erro ou mito mais comum; slide 2 reduz ceticismo e abre o loop; desenvolvimento em pares: um slide com o mito/erro (etiqueta MITO ou ERRO) seguido da verdade/correção com o mecanismo por trás (etiqueta VERDADE ou CERTO), do erro mais comum ao mais caro; fechamento com a virada de perspectiva; CTA final.`,
 };
 
 const SCHEMA_CAPAS={
@@ -116,8 +136,8 @@ const SCHEMA_CAPAS={
     capas:{type:"array",items:{
       type:"object",
       properties:{
-        headline:{type:"string",description:"Título da capa, 8 a 12 palavras, para o scroll sozinho"},
-        subtitulo:{type:"string",description:"Subtítulo curto de apoio, 1 frase"},
+        headline:{type:"string",description:"Título da capa, 6 a 12 palavras, anuncia o payoff (nunca o assunto), para o scroll sozinho"},
+        subtitulo:{type:"string",description:"1 frase que neutraliza a objeção principal ou aumenta a tensão"},
       },
       required:["headline","subtitulo"],additionalProperties:false,
     }},
@@ -131,9 +151,9 @@ const SCHEMA_ROTEIRO={
     slides:{type:"array",items:{
       type:"object",
       properties:{
-        etiqueta:{type:"string",description:"Etiqueta curta em maiúsculas (ex: MITO, VERDADE, PASSO 1, DADO) ou string vazia"},
-        titulo:{type:"string",description:"Título do slide, até 12 palavras"},
-        texto:{type:"string",description:"Texto de apoio, 1 a 2 frases curtas"},
+        etiqueta:{type:"string",description:"Mini-headline de sinalização em maiúsculas (ex: MITO, VERDADE, PASSO 1, DADO, RESUMO) ou string vazia"},
+        titulo:{type:"string",description:"Título do slide, até 10 palavras, provoca em vez de descrever"},
+        texto:{type:"string",description:"Texto de apoio, 1 a 2 frases, 15 a 25 palavras; slide inteiro até 40 palavras"},
       },
       required:["etiqueta","titulo","texto"],additionalProperties:false,
     }},
@@ -373,7 +393,7 @@ function StepRoteiro({projeto,update,next,back}){
     try{
       const out=await chamarIA({
         system:PROMPT_BASE+"\n\n"+PROMPT_CATEGORIA[projeto.categoria],
-        userText:contextoDoProjeto(projeto)+`\n\nTAREFA: gere exatamente 3 opções de CAPA para este carrossel, com hooks psicológicos diferentes entre si (ex.: curiosidade, medo de ficar de fora, ganho concreto). Cada capa: headline de 8 a 12 palavras que para o scroll sozinha + subtítulo de 1 frase.`,
+        userText:contextoDoProjeto(projeto)+`\n\nTAREFA: gere exatamente 3 opções de CAPA para este carrossel, cada uma com um gatilho psicológico DIFERENTE (escolha 3 entre: curiosidade, FOMO/erro, ganho concreto, defesa, alívio, descrença/contrário). Cada headline anuncia o PAYOFF, nunca o assunto, em 6 a 12 palavras, e precisa passar no teste do DM: alguém mandaria essa capa pra um amigo específico. Subtítulo: 1 frase que neutraliza a objeção principal ou aumenta a tensão.`,
         useWebFetch:!!projeto.link.trim(),
         schema:SCHEMA_CAPAS,
         maxTokens:8000,
@@ -393,7 +413,7 @@ function StepRoteiro({projeto,update,next,back}){
         system:PROMPT_BASE+"\n\n"+PROMPT_CATEGORIA[projeto.categoria],
         userText:contextoDoProjeto(projeto)
           +`\n\nCAPA JÁ ESCOLHIDA (slide 1, não recrie):\nHeadline: ${capa.headline}\nSubtítulo: ${capa.subtitulo}`
-          +`\n\nTAREFA: escreva os ${internos} slides internos (slide 2 até o slide ${projeto.qtdSlides-1}) alinhados a essa capa, e o slide final de CTA. O slide 2 reduz ceticismo e abre o loop. Devolva no campo "slides" exatamente ${internos} itens, na ordem.`,
+          +`\n\nTAREFA: escreva os ${internos} slides internos (slide 2 até o slide ${projeto.qtdSlides-1}) alinhados a essa capa, e o slide final de CTA. O slide 2 reduz ceticismo e abre o loop. Desenvolva em ESCALADA: o insight mais forte fica no fim do desenvolvimento. ${internos>=5?"O último slide interno é um resumo salvável (etiqueta RESUMO) de tudo que foi entregue. ":""}Cada slide entrega uma micro-revelação e abre curiosidade pro próximo. O CTA fecha o círculo com a promessa da capa. Antes de devolver, valide cada slide: passa no teste do DM? Tem dado, número ou mecanismo concreto? Está dentro de 40 palavras? Devolva no campo "slides" exatamente ${internos} itens, na ordem.`,
         useWebFetch:!!projeto.link.trim(),
         schema:SCHEMA_ROTEIRO,
         maxTokens:16000,
