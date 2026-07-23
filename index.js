@@ -15,8 +15,9 @@
  *   Variável:  ALLOWED_ORIGIN  (a URL do site, ex: https://roberthjhoww.github.io)
  */
 
-const ANTHROPIC_MODEL = "claude-sonnet-5";
+const DEFAULT_MODEL = "claude-opus-4-8";
 const GEMINI_MODEL = "gemini-3.1-flash-image";
+const MAX_OUTPUT_TOKENS = 32000;
 
 export default {
   async fetch(request, env) {
@@ -52,9 +53,20 @@ export default {
   },
 };
 
-// Espera do site: { system: "...", messages: [{role:"user", content:"..."}] }
+// O site manda: { system, messages, tools?, output_config?, thinking?, max_tokens? }
+// O worker só fixa o modelo, limita o tamanho da resposta e anexa a chave.
 async function proxyRoteiro(request, env, headers) {
   const body = await request.json();
+  const payload = {
+    model: DEFAULT_MODEL,
+    max_tokens: Math.min(body.max_tokens || 16000, MAX_OUTPUT_TOKENS),
+    system: body.system || "",
+    messages: body.messages || [],
+  };
+  if (body.tools) payload.tools = body.tools;
+  if (body.output_config) payload.output_config = body.output_config;
+  if (body.thinking) payload.thinking = body.thinking;
+
   const resp = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -62,12 +74,7 @@ async function proxyRoteiro(request, env, headers) {
       "x-api-key": env.ANTHROPIC_API_KEY,
       "anthropic-version": "2023-06-01",
     },
-    body: JSON.stringify({
-      model: ANTHROPIC_MODEL,
-      max_tokens: 4096,
-      system: body.system || "",
-      messages: body.messages || [],
-    }),
+    body: JSON.stringify(payload),
   });
   return new Response(await resp.text(), { status: resp.status, headers });
 }
