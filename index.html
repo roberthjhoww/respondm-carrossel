@@ -12,7 +12,7 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.7/babel.min.js"></script>
 <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=Montserrat:wght@800&family=Poppins:wght@800&display=swap" rel="stylesheet"/>
 <!-- Firebase SDK (compat: expõe window.firebase, funciona com o Babel inline) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -69,8 +69,24 @@ const CATEGORIAS=[
   {id:"noticias",emoji:"📰",nome:"Notícias e novidades",desc:"Atualizações do Instagram, redes sociais e IA. Conteúdo tipo \"acabou de mudar\".",chip:"NOVIDADE",accent:{bg:"#EF4444",fg:"#FFFFFF"}},
   {id:"curiosidades",emoji:"🤯",nome:"Curiosidades e dados",desc:"Números e fatos pouco conhecidos que geram \"eu não sabia disso\".",chip:"CURIOSIDADE",accent:{bg:"#FEDB00",fg:"#1A1A2E"}},
   {id:"tutoriais",emoji:"📋",nome:"Tutoriais e passo a passo",desc:"Como fazer algo, em passos numerados. Formato bem salvável.",chip:"TUTORIAL",accent:{bg:"#22C55E",fg:"#FFFFFF"}},
-  {id:"erros_mitos",emoji:"⚠️",nome:"Erros, mitos e bastidores",desc:"Quebra de crença errada: mito vs verdade, erro vs certo, antes/depois.",chip:"MITOS",accent:{bg:"#7447E1",fg:"#FFFFFF"}},
+  {id:"erros_mitos",emoji:"⚠️",nome:"Erros, mitos e bastidores",desc:"Quebra de crença errada: mito vs verdade, erro vs certo.",chip:"MITOS",accent:{bg:"#7447E1",fg:"#FFFFFF"}},
+  {id:"checklist",emoji:"✅",nome:"Checklist salvável",desc:"Lista de verificação pra salvar e consultar depois. Formato nº 1 em saves.",chip:"CHECKLIST",accent:{bg:"#0EA5E9",fg:"#FFFFFF"}},
+  {id:"antes_depois",emoji:"📈",nome:"Antes e depois",desc:"Transformação com métrica real: de onde saiu, onde chegou, o que mudou.",chip:"ANTES/DEPOIS",accent:{bg:"#F97316",fg:"#FFFFFF"}},
+  {id:"opiniao",emoji:"🔥",nome:"Opinião contrária",desc:"Take que desafia uma prática que todo mundo defende. Gera share e comentário.",chip:"OPINIÃO",accent:{bg:"#EC4899",fg:"#FFFFFF"}},
+  {id:"demo_produto",emoji:"⚡",nome:"Demonstração do produto",desc:"A ResponDM em ação resolvendo um problema real, passo a passo.",chip:"NA PRÁTICA",accent:{bg:"#14B8A6",fg:"#FFFFFF"}},
 ];
+
+// Conteúdo de exemplo do preview de template (3 mini-slides renderizados pelo próprio engine)
+const AMOSTRAS={
+  noticias:{capa:{h:"O Instagram mudou seu alcance e ninguém te avisou",s:"A atualização já está valendo pra contas de todo tamanho.",d:"mudou seu alcance"},meio:{e:"MUDOU",t:"Contas pequenas ganharam prioridade no Reels",x:"O peso de quem tem menos de 10 mil seguidores subiu na recomendação. Janela boa pra postar mais."},cta:{t:"Quer aproveitar antes da maioria?",x:"Comenta ALCANCE que o guia completo chega no seu direct.",k:"ALCANCE"}},
+  curiosidades:{capa:{h:"87% dos seus seguidores nunca veem seus posts",s:"E o motivo não é o horário que você posta.",d:"87%"},meio:{e:"DADO",t:"O feed entrega seu post pra 1 em cada 10",x:"A primeira hora define se o resto vai ver. Salvamentos contam 3x mais que curtidas."},cta:{t:"Quer os dados completos?",x:"Comenta DADOS e recebe o estudo no direct.",k:"DADOS"}},
+  tutoriais:{capa:{h:"DM automática no ar em 7 minutos, sem programar",s:"Mesmo que você nunca tenha usado automação.",d:"7 minutos"},meio:{e:"PASSO 1",t:"Escolha a palavra-chave do comentário",x:"Uma palavra só, fácil de digitar. Ela vira o gatilho que dispara a mensagem no direct."},cta:{t:"Quer o passo a passo completo?",x:"Comenta PASSO e te mando o tutorial no direct.",k:"PASSO"}},
+  erros_mitos:{capa:{h:"O erro que mata seu alcance não é o horário",s:"Você provavelmente comete ele todo dia.",d:"não é o horário"},meio:{e:"MITO",t:"Postar todo dia faz o perfil crescer",x:"Frequência sem retenção derruba a média da conta. O algoritmo mede quem fica, não quem posta."},cta:{t:"Quer parar de sabotar seu perfil?",x:"Comenta ERRO e recebe a lista completa no direct.",k:"ERRO"}},
+  checklist:{capa:{h:"O checklist que eu confiro antes de todo post",s:"7 itens em 2 minutos, antes de apertar publicar.",d:"checklist"},meio:{e:"ITEM 3",t:"Palavra-chave escrita na capa",x:"O Instagram lê o texto da imagem. Sem a palavra que o público busca, o post não aparece na pesquisa."},cta:{t:"Quer o checklist completo pra salvar?",x:"Comenta CHECK que ele chega no seu direct.",k:"CHECK"}},
+  antes_depois:{capa:{h:"De 212 pra 4.700 visitas com uma mudança",s:"Mesmo perfil, mesmo nicho, 30 dias de diferença.",d:"4.700"},meio:{e:"ANTES",t:"Post bonito, legenda longa, zero direção",x:"Média de 212 contas alcançadas. Ninguém salvava, ninguém mandava pra ninguém."},cta:{t:"Quer replicar essa virada?",x:"Comenta COMO e te mando o passo a passo no direct.",k:"COMO"}},
+  opiniao:{capa:{h:"Postar todo dia está afundando seu perfil",s:"Opinião impopular, com dados pra sustentar.",d:"afundando"},meio:{e:"OPINIÃO",t:"Frequência não é estratégia",x:"3 posts fortes por semana batem 7 medianos. A retenção média da conta vale mais que o volume."},cta:{t:"Discorda? Me conta nos comentários",x:"E comenta VERDADE pra receber os dados no direct.",k:"VERDADE"}},
+  demo_produto:{capa:{h:"Comentou, recebeu no direct. Sem você tocar no celular",s:"Foi a automação por comentário que respondeu.",d:"Sem você tocar"},meio:{e:"NA PRÁTICA",t:"A palavra-chave dispara a entrega",x:"Alguém comenta LINK, a ResponDM responde o comentário e manda o material no direct em segundos."},cta:{t:"Quer ver isso rodando no seu perfil?",x:"Comenta DEMO que eu te mostro no direct.",k:"DEMO"}},
+};
 
 /* ─────────────────────────────────────────────
    Prompts da IA (destilados da skill de carrossel da ResponDM)
@@ -118,6 +134,15 @@ PROIBIDO (nunca use):
 - headline que anuncia o assunto em vez do payoff
 - conclusão óbvia embalada como insight
 
+DESTAQUE DE TÍTULO (campo "destaque"):
+- Em cada título ou headline, quando fizer sentido, escolha UM trecho de 1 a 3 palavras CONSECUTIVAS (copiado exatamente como aparece no título) que carrega o payoff: o número, a palavra de tensão ou o vencedor da frase. Esse trecho ganha cor de destaque no design.
+- String vazia quando nenhum trecho merecer. Nunca destaque o título inteiro nem trechos genéricos ("o seu", "que você").
+
+PROMPT DE IMAGEM (campo "prompt_imagem"):
+- Para a capa e para cada slide, escreva um prompt EM INGLÊS para gerar uma fotografia de apoio, como um diretor de criação, neste formato: [Subject with adjectives] doing [action] in [context]. [Composition/camera angle]. [Lighting/atmosphere]. [Photography style].
+- Cena concreta ligada à ideia daquele slide (criador brasileiro no celular, estúdio caseiro, tela com métricas, notificações chegando). Nada genérico tipo "social media concept". Sem pessoas famosas.
+- Proibido pedir texto na imagem: termine SEMPRE com "No text, no letters, no logos."
+
 ESTRUTURA GERAL: slide 1 é a capa (hook de payoff). Slide 2 reduz ceticismo e abre o loop ("nos próximos X slides você vai ver..."). Desenvolvimento em escalada. Resumo salvável quando houver 5+ slides internos. Último slide é o CTA com loop-back.`;
 
 const PROMPT_CATEGORIA={
@@ -129,6 +154,14 @@ Dado chocante é o formato nº 1 em SHARES: escreva cada dado pra dar vontade de
 Tutorial é o formato nº 1 em SAVES: o carrossel inteiro deve valer como material de consulta. Estrutura: capa com a promessa específica do resultado + prazo ou esforço ("em 10 minutos", "sem ferramenta paga"); slide 2 diz o que a pessoa vai conseguir fazer e abre o loop; desenvolvimento em passos numerados (etiquetas "PASSO 1", "PASSO 2"...), cada passo com UMA ação concreta executável e um detalhe que só quem faz sabe; último slide interno é o resumo salvável de todos os passos (etiqueta RESUMO); CTA final.`,
   erros_mitos:`CATEGORIA: ERROS/MITOS/BASTIDORES.
 Fórmula PAS (dor, agitação, solução). Take contrário gera SHARE e comentário: a capa deve desafiar uma crença que o público defende. Estrutura: capa provoca com o erro ou mito mais comum; slide 2 reduz ceticismo e abre o loop; desenvolvimento em pares: um slide com o mito/erro (etiqueta MITO ou ERRO) seguido da verdade/correção com o mecanismo por trás (etiqueta VERDADE ou CERTO), do erro mais comum ao mais caro; fechamento com a virada de perspectiva; CTA final.`,
+  checklist:`CATEGORIA: CHECKLIST SALVÁVEL.
+Checklist é o formato nº 1 em SAVES: o carrossel inteiro vale como material de consulta que a pessoa volta a abrir. Estrutura: capa promete a lista completa com o resultado específico que ela garante; slide 2 diz o que a lista cobre e abre o loop; desenvolvimento com UM item verificável por slide (etiquetas ITEM 1, ITEM 2...), cada item com a ação concreta e o detalhe que a maioria esquece; o último slide interno é o checklist inteiro condensado pra salvar (etiqueta CHECKLIST); um slide do meio pede naturalmente o save; CTA final.`,
+  antes_depois:`CATEGORIA: ANTES/DEPOIS COM MÉTRICA.
+Transformação com número específico é prova, e prova gera share e save. Números reais, ímpares e quebrados (212, 4.700), nunca redondos demais. Estrutura: capa anuncia a transformação em números (de X pra Y) sem revelar o método; slide 2 pinta o cenário do ANTES com a métrica de partida (etiqueta ANTES); desenvolvimento mostra cada mudança que causou a virada (etiquetas MUDANÇA 1, MUDANÇA 2...), com o efeito medido de cada uma, em escalada; o slide interno final consolida o DEPOIS com os números lado a lado (etiqueta DEPOIS); CTA final promete o método completo no direct.`,
+  opiniao:`CATEGORIA: OPINIÃO CONTRÁRIA.
+Take contrário é o formato nº 1 em comentários e gera share por identificação ("eu sempre disse isso") ou revolta. A capa desafia DE FRENTE uma prática que o público defende, com posição clara, sem meio-termo. Estrutura: capa com a tese contrária; slide 2 reconhece por que todo mundo acredita no contrário (reduz defesa); desenvolvimento derruba a crença com dados e mecanismos, do argumento mais fraco pro mais forte (etiquetas OPINIÃO, DADO, PROVA); o slide interno final entrega o que fazer NO LUGAR da prática criticada; CTA final convida a discordar nos comentários E comenta a palavra-chave.`,
+  demo_produto:`CATEGORIA: DEMONSTRAÇÃO DO PRODUTO.
+O carrossel mostra a ResponDM em ação resolvendo UM problema específico, como bastidor real, nunca como anúncio. A capa vende o RESULTADO da automação (nunca "conheça a ferramenta"). Estrutura: capa com o resultado que a automação entrega; slide 2 mostra a dor de fazer isso manualmente (números de tempo perdido ajudam); desenvolvimento mostra o passo a passo real dentro da ResponDM (etiquetas NA PRÁTICA, PASSO 1...), sempre nomeando o mecanismo concreto (automação por comentário, resposta pública, Flow); o slide interno final mostra o resultado rodando; o CTA é a própria demonstração: comenta a palavra-chave e recebe no direct.`,
 };
 
 const SCHEMA_CAPAS={
@@ -139,8 +172,10 @@ const SCHEMA_CAPAS={
       properties:{
         headline:{type:"string",description:"Título da capa, 6 a 12 palavras, anuncia o payoff (nunca o assunto), para o scroll sozinho"},
         subtitulo:{type:"string",description:"1 frase que neutraliza a objeção principal ou aumenta a tensão"},
+        destaque:{type:"string",description:"Trecho de 1 a 3 palavras consecutivas copiado EXATAMENTE da headline que ganha cor de destaque, ou string vazia"},
+        prompt_imagem:{type:"string",description:"Prompt EM INGLÊS para foto de fundo da capa, formato diretor de criação, terminando com: No text, no letters, no logos."},
       },
-      required:["headline","subtitulo"],additionalProperties:false,
+      required:["headline","subtitulo","destaque","prompt_imagem"],additionalProperties:false,
     }},
   },
   required:["capas"],additionalProperties:false,
@@ -155,16 +190,20 @@ const SCHEMA_ROTEIRO={
         etiqueta:{type:"string",description:"Mini-headline de sinalização em maiúsculas (ex: MITO, VERDADE, PASSO 1, DADO, RESUMO) ou string vazia"},
         titulo:{type:"string",description:"Título do slide, até 10 palavras, provoca em vez de descrever"},
         texto:{type:"string",description:"Texto de apoio, 1 a 2 frases, 15 a 25 palavras; slide inteiro até 40 palavras"},
+        destaque:{type:"string",description:"Trecho de 1 a 3 palavras consecutivas copiado EXATAMENTE do título que ganha cor de destaque, ou string vazia"},
+        prompt_imagem:{type:"string",description:"Prompt EM INGLÊS para foto de apoio deste slide, formato diretor de criação, terminando com: No text, no letters, no logos."},
       },
-      required:["etiqueta","titulo","texto"],additionalProperties:false,
+      required:["etiqueta","titulo","texto","destaque","prompt_imagem"],additionalProperties:false,
     }},
     cta:{type:"object",
       properties:{
         titulo:{type:"string",description:"Título do slide final de CTA"},
         texto:{type:"string",description:"Instrução curta: comente a palavra-chave e receba no direct"},
         palavra_chave:{type:"string",description:"UMA palavra em maiúsculas"},
+        destaque:{type:"string",description:"Trecho de 1 a 3 palavras consecutivas copiado EXATAMENTE do título do CTA, ou string vazia"},
+        prompt_imagem:{type:"string",description:"Prompt EM INGLÊS para foto de apoio do CTA, formato diretor de criação, terminando com: No text, no letters, no logos."},
       },
-      required:["titulo","texto","palavra_chave"],additionalProperties:false,
+      required:["titulo","texto","palavra_chave","destaque","prompt_imagem"],additionalProperties:false,
     },
   },
   required:["slides","cta"],additionalProperties:false,
@@ -318,20 +357,74 @@ function TopBar({step,setStep,onNovo}){
 /* ─────────────────────────────────────────────
    Etapa 1 — Categoria
    ───────────────────────────────────────────── */
+function PreviewCategoria({cat,onConfirm,onClose}){
+  const [imgs,setImgs]=useState([]);
+  useEffect(()=>{
+    let vivo=true;
+    (async()=>{
+      try{
+        await Promise.all(["400 90px 'Anton'","800 30px Inter","600 28px Inter","500 38px Inter","400 38px Inter"]
+          .map(f=>document.fonts.load(f)));
+      }catch(e){}
+      const am=AMOSTRAS[cat.id];if(!am)return;
+      const specs=[
+        {tipo:"capa",headline:am.capa.h,sub:am.capa.s,destaque:am.capa.d},
+        {tipo:"interno",etiqueta:am.meio.e,titulo:am.meio.t,texto:am.meio.x,destaque:""},
+        {tipo:"cta",titulo:am.cta.t,texto:am.cta.x,keyword:am.cta.k,destaque:""},
+      ];
+      const posicoes=[0,2,6];
+      const urls=specs.map((sp,i)=>{
+        const cv=document.createElement("canvas");cv.width=W;cv.height=H;
+        desenharSlide(cv.getContext("2d"),sp,{idx:posicoes[i],total:7,accent:cat.accent,chip:cat.chip,estilo:ESTILO_PADRAO});
+        return cv.toDataURL("image/png");
+      });
+      if(vivo)setImgs(urls);
+    })();
+    return()=>{vivo=false;};
+  },[cat.id]);
+  return(
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(26,22,48,.55)",zIndex:50,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"var(--surface)",borderRadius:20,padding:24,width:"100%",maxWidth:720,maxHeight:"90vh",overflowY:"auto",boxShadow:"var(--shadow-md)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+          <div style={{fontWeight:800,fontSize:17}}>{cat.emoji} {cat.nome}</div>
+          <button onClick={onClose} style={{border:"none",background:"none",cursor:"pointer",fontSize:18,color:"var(--text3)",fontWeight:800}}>✕</button>
+        </div>
+        <p style={{color:"var(--text2)",fontSize:13,marginBottom:16}}>{cat.desc} Assim ficam a capa, um slide do meio e o CTA:</p>
+        {imgs.length===0?(
+          <div style={{padding:40,textAlign:"center",color:"var(--text3)"}}>Desenhando o preview...</div>
+        ):(
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:18}}>
+            {imgs.map((u,i)=><img key={i} src={u} style={{width:"100%",borderRadius:10,border:"1px solid var(--border)",display:"block"}}/>)}
+          </div>
+        )}
+        <div style={{display:"flex",justifyContent:"flex-end",gap:10}}>
+          <Btn variant="secondary" onClick={onClose}>Voltar</Btn>
+          <Btn onClick={onConfirm}>Confirmar template →</Btn>
+        </div>
+      </div>
+    </div>
+  );
+}
 function StepCategoria({projeto,update,next}){
+  const [preview,setPreview]=useState(null);
   return(
     <div>
       <h2 style={{fontSize:22,fontWeight:800,marginBottom:6}}>Que tipo de carrossel?</h2>
-      <p style={{color:"var(--text2)",marginBottom:22}}>A categoria define o estilo do roteiro e o visual dos slides.</p>
+      <p style={{color:"var(--text2)",marginBottom:22}}>A categoria define o estilo do roteiro e o visual dos slides. Clique pra ver o preview do template.</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14}}>
         {CATEGORIAS.map(c=>(
-          <Card key={c.id} selected={projeto.categoria===c.id} onClick={()=>{update({categoria:c.id});next();}}>
-            <div style={{fontSize:28,marginBottom:8}}>{c.emoji}</div>
+          <Card key={c.id} selected={projeto.categoria===c.id} onClick={()=>setPreview(c)}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+              <div style={{fontSize:28}}>{c.emoji}</div>
+              <span style={{fontSize:10,fontWeight:800,letterSpacing:.5,color:c.accent.fg,background:c.accent.bg,borderRadius:999,padding:"3px 10px"}}>{c.chip}</span>
+            </div>
             <div style={{fontWeight:800,fontSize:15,marginBottom:4}}>{c.nome}</div>
             <div style={{fontSize:13,color:"var(--text2)"}}>{c.desc}</div>
           </Card>
         ))}
       </div>
+      {preview&&<PreviewCategoria cat={preview} onClose={()=>setPreview(null)}
+        onConfirm={()=>{update({categoria:preview.id});setPreview(null);next();}}/>}
     </div>
   );
 }
@@ -493,6 +586,9 @@ function StepRoteiro({projeto,update,next,back}){
             <Field label="Subtítulo">
               <input style={inputStyle} value={capaEscolhida.subtitulo} onChange={e=>setCapa("subtitulo",e.target.value)}/>
             </Field>
+            <Field label="Destaque (trecho da headline que ganha cor, opcional)">
+              <input style={{...inputStyle,maxWidth:320}} value={capaEscolhida.destaque||""} placeholder="Ex.: 7 minutos" onChange={e=>setCapa("destaque",e.target.value)}/>
+            </Field>
           </Card>
 
           {projeto.slides.map((s,i)=>(
@@ -510,9 +606,18 @@ function StepRoteiro({projeto,update,next,back}){
                   </Field>
                 </div>
               </div>
-              <Field label="Texto de apoio">
-                <textarea rows={2} style={{...inputStyle,resize:"vertical"}} value={s.texto} onChange={e=>setSlide(i,"texto",e.target.value)}/>
-              </Field>
+              <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+                <div style={{flex:1,minWidth:220}}>
+                  <Field label="Texto de apoio">
+                    <textarea rows={2} style={{...inputStyle,resize:"vertical"}} value={s.texto} onChange={e=>setSlide(i,"texto",e.target.value)}/>
+                  </Field>
+                </div>
+                <div style={{width:200}}>
+                  <Field label="Destaque (opcional)">
+                    <input style={inputStyle} value={s.destaque||""} placeholder="trecho do título" onChange={e=>setSlide(i,"destaque",e.target.value)}/>
+                  </Field>
+                </div>
+              </div>
             </Card>
           ))}
 
@@ -524,9 +629,14 @@ function StepRoteiro({projeto,update,next,back}){
             <Field label="Texto">
               <textarea rows={2} style={{...inputStyle,resize:"vertical"}} value={projeto.cta.texto} onChange={e=>update({cta:{...projeto.cta,texto:e.target.value}})}/>
             </Field>
-            <Field label="Palavra-chave do comentário (vira o gatilho da automação na ResponDM)">
-              <input style={{...inputStyle,fontWeight:800,textTransform:"uppercase",maxWidth:240}} value={projeto.cta.palavra_chave} onChange={e=>update({cta:{...projeto.cta,palavra_chave:e.target.value.toUpperCase()}})}/>
-            </Field>
+            <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+              <Field label="Palavra-chave do comentário (vira o gatilho da automação na ResponDM)">
+                <input style={{...inputStyle,fontWeight:800,textTransform:"uppercase",width:240}} value={projeto.cta.palavra_chave} onChange={e=>update({cta:{...projeto.cta,palavra_chave:e.target.value.toUpperCase()}})}/>
+              </Field>
+              <Field label="Destaque (opcional)">
+                <input style={{...inputStyle,width:200}} value={projeto.cta.destaque||""} placeholder="trecho do título" onChange={e=>update({cta:{...projeto.cta,destaque:e.target.value}})}/>
+              </Field>
+            </div>
           </Card>
         </div>
       )}
@@ -543,15 +653,51 @@ function StepRoteiro({projeto,update,next,back}){
    Etapa 4 — Slides: motor visual em Canvas (1080×1350)
    Capa e CTA escuros (balões de DM), internos claros.
    ───────────────────────────────────────────── */
+/* ══ ENGINE-START (o harness de teste extrai deste marcador até o de fechamento) ══ */
 const W=1080,H=1350,DARK="#1A1A2E",ROXO="#7447E1",AMARELO="#FEDB00",LAVANDA="#C4B0F5";
 
-function montarSlides(projeto){
-  const capa=projeto.capaIdx!=null?projeto.capas[projeto.capaIdx]:null;
-  if(!capa||!projeto.cta||!projeto.slides.length) return [];
-  const list=[{key:"capa",tipo:"capa",headline:capa.headline,sub:capa.subtitulo}];
-  projeto.slides.forEach((s,i)=>list.push({key:"s"+i,tipo:"interno",etiqueta:s.etiqueta,titulo:s.titulo,texto:s.texto}));
-  list.push({key:"cta",tipo:"cta",titulo:projeto.cta.titulo,texto:projeto.cta.texto,keyword:projeto.cta.palavra_chave});
-  return list;
+// Tamanhos P/M/G/GG (multiplicadores sobre o tamanho base de cada componente)
+const TAM={P:.85,M:1,G:1.15,GG:1.3};
+// Fontes de título disponíveis. peso: único peso carregado; escala: compensa a largura
+// (condensadas como Anton rendem mais estreitas, então sobem de corpo); lh: line-height.
+const FONTES={
+  "Anton":{peso:"400",escala:1.12,lh:1.06},
+  "Bebas Neue":{peso:"400",escala:1.18,lh:1.02},
+  "Inter":{peso:"900",escala:1,lh:1.14},
+  "Poppins":{peso:"800",escala:.97,lh:1.16},
+  "Montserrat":{peso:"800",escala:.95,lh:1.16},
+};
+const ESTILO_PADRAO={fonteTitulo:"Anton",tamanhos:{},cores:{}};
+
+function resolverEstilo(projeto,key){
+  const g=projeto.estilo||{},o=(projeto.ajustes||{})[key]||{};
+  return{
+    fonteTitulo:o.fonteTitulo||g.fonteTitulo||"Anton",
+    tamanhos:{...(g.tamanhos||{}),...(o.tamanhos||{})},
+    cores:{...(g.cores||{}),...(o.cores||{})},
+  };
+}
+function mult(est,comp){return TAM[(est.tamanhos||{})[comp]]||1;}
+function corClara(hex){
+  const m=/^#?([0-9a-f]{6})$/i.exec(String(hex||""));if(!m)return false;
+  const n=parseInt(m[1],16),r=n>>16,g=(n>>8)&255,b=n&255;
+  return (r*299+g*587+b*114)/1000>150;
+}
+
+// Marca quais palavras do título pertencem ao trecho de destaque (comparação sem pontuação)
+function marcarDestaque(txt,destaque){
+  const norm=w=>String(w).toLowerCase().replace(/[^\p{L}\p{N}%]/gu,"");
+  const words=String(txt||"").trim().split(/\s+/);
+  const D=String(destaque||"").trim().split(/\s+/).map(norm).filter(Boolean);
+  const marks=words.map(()=>false);
+  if(D.length){
+    for(let i=0;i<=words.length-D.length;i++){
+      let ok=true;
+      for(let j=0;j<D.length;j++) if(norm(words[i+j])!==D[j]){ok=false;break;}
+      if(ok){for(let j=0;j<D.length;j++)marks[i+j]=true;break;}
+    }
+  }
+  return marks;
 }
 
 function rr(ctx,x,y,w,h,r){
@@ -569,16 +715,40 @@ function quebrar(ctx,txt,maxW){
   if(cur)lines.push(cur);
   return lines;
 }
-function ajustarFonte(ctx,txt,weight,maxW,start,min,maxLines){
-  let size=start;
-  while(size>min){ctx.font=weight+" "+size+"px Inter";if(quebrar(ctx,txt,maxW).length<=maxLines)break;size-=4;}
-  ctx.font=weight+" "+size+"px Inter";
-  return {size,lines:quebrar(ctx,txt,maxW)};
+// Ajusta o corpo do TÍTULO na fonte escolhida até caber em maxLines. base/min em px "Inter";
+// a escala da fonte compensa condensadas. Retorna o px final, as linhas e o line-height.
+function ajustarFonteTit(ctx,est,txt,maxW,base,min,maxLines){
+  const f=FONTES[est.fonteTitulo]||FONTES.Anton;
+  const font=s=>f.peso+" "+s+"px '"+est.fonteTitulo+"'";
+  let px=Math.round(base*f.escala);const minPx=Math.round(min*f.escala);
+  while(px>minPx){ctx.font=font(px);if(quebrar(ctx,txt,maxW).length<=maxLines)break;px-=4;}
+  ctx.font=font(px);
+  return {px,lines:quebrar(ctx,txt,maxW),lh:f.lh,font:font(px)};
 }
 function desenharLinhas(ctx,lines,x,y,lineH,align){
   ctx.textAlign=align||"left";
   lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lineH));
   ctx.textAlign="left";
+  return y+lines.length*lineH;
+}
+// Desenha o título palavra a palavra, pintando as palavras marcadas na cor de destaque.
+// marks segue a ordem das palavras do texto que gerou as linhas (mesma quebra).
+function desenharLinhasT(ctx,lines,marks,x,y,lineH,align,corBase,corDestaque){
+  ctx.textAlign="left";
+  const sp=ctx.measureText(" ").width;
+  let wi=0;
+  lines.forEach((linha,li)=>{
+    const words=linha.split(" ");
+    let cx=align==="center"?x-ctx.measureText(linha).width/2:x;
+    const ly=y+li*lineH;
+    for(const wd of words){
+      ctx.fillStyle=marks[wi]?corDestaque:corBase;
+      ctx.fillText(wd,cx,ly);
+      cx+=ctx.measureText(wd).width+sp;
+      wi++;
+    }
+  });
+  ctx.fillStyle=corBase;
   return y+lines.length*lineH;
 }
 function pill(ctx,cx,y,texto,bg,fg,size,center){
@@ -607,6 +777,32 @@ function fundoFoto(ctx,img,forte){
   g.addColorStop(.55,"rgba(26,26,46,"+(forte?.8:.7)+")");
   g.addColorStop(1,"rgba(26,26,46,.95)");
   ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  // Vinheta: escurece as bordas pra foto nunca ficar "seca" atrás do texto
+  const v=ctx.createRadialGradient(W/2,H*.44,H*.3,W/2,H/2,H*.85);
+  v.addColorStop(0,"rgba(26,26,46,0)");
+  v.addColorStop(1,"rgba(26,26,46,.5)");
+  ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
+}
+// Card de imagem fixa 4:3 (cantos arredondados, moldura branca, sombra), como na ref do Studio
+function cardFoto(ctx,img,x,y,w,h){
+  ctx.save();
+  ctx.shadowColor="rgba(10,8,24,.35)";ctx.shadowBlur=46;ctx.shadowOffsetY=20;
+  ctx.fillStyle="#FFFFFF";rr(ctx,x,y,w,h,30);ctx.fill();
+  ctx.restore();
+  const p=14,iw=w-2*p,ih=h-2*p;
+  ctx.save();rr(ctx,x+p,y+p,iw,ih,20);ctx.clip();
+  const s=Math.max(iw/img.width,ih/img.height);
+  const dw=img.width*s,dh=img.height*s;
+  ctx.drawImage(img,x+p+(iw-dw)/2,y+p+(ih-dh)/2,dw,dh);
+  ctx.restore();
+}
+// Encaixa o card 4:3 centralizado entre yTop e a área da metaBar; some se não houver espaço
+function cardFotoAuto(ctx,img,yTop){
+  const yMax=H-180;
+  let w=W-2*96,h=w*.75;
+  if(yTop+h>yMax){h=yMax-yTop;w=h/.75;}
+  if(h<230)return;
+  cardFoto(ctx,img,(W-w)/2,yTop,w,h);
 }
 function gridEscuro(ctx){
   ctx.strokeStyle="rgba(196,176,245,0.06)";ctx.lineWidth=1;
@@ -627,14 +823,23 @@ function corEtiqueta(et,accent){
 function metaBar(ctx,idx,total,accent,dark,semSeta){
   ctx.font="600 28px Inter";
   ctx.fillStyle=dark?"rgba(255,255,255,.6)":"#A49EC4";
-  ctx.fillText((idx+1)+"/"+total,80,H-64);
-  if(!semSeta){
-    if(idx===0){ctx.font="800 30px Inter";ctx.fillStyle=AMARELO;ctx.textAlign="right";ctx.fillText("ARRASTA →",W-80,H-64);ctx.textAlign="left";}
-    else{ctx.font="800 34px Inter";ctx.fillStyle=dark?AMARELO:ROXO;ctx.textAlign="right";ctx.fillText("→",W-80,H-62);ctx.textAlign="left";}
+  ctx.fillText(String(idx+1).padStart(2,"0")+"/"+String(total).padStart(2,"0"),80,H-58);
+  // Fileira de pontos (ref do Studio): quadradinhos, ativo vira losango na cor de acento
+  const gap=36,y=H-68,x0=W/2-(total-1)*gap/2;
+  for(let i=0;i<total;i++){
+    const x=x0+i*gap;
+    if(i===idx){
+      ctx.fillStyle=accent.bg;
+      ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/4);ctx.fillRect(-8.5,-8.5,17,17);ctx.restore();
+    }else{
+      ctx.fillStyle=dark?"rgba(255,255,255,.3)":"rgba(26,22,48,.22)";
+      ctx.fillRect(x-5,y-5,10,10);
+    }
   }
-  ctx.fillStyle=dark?"rgba(255,255,255,.12)":"rgba(116,71,225,.15)";
-  ctx.fillRect(0,H-10,W,10);
-  ctx.fillStyle=accent.bg;ctx.fillRect(0,H-10,W*(idx+1)/total,10);
+  if(!semSeta){
+    ctx.font="800 30px Inter";ctx.fillStyle=dark?AMARELO:ROXO;ctx.textAlign="right";
+    ctx.fillText(idx===0?"ARRASTA →":"→",W-80,H-58);ctx.textAlign="left";
+  }
 }
 function topo(ctx,chip,accent,dark){
   ctx.font="600 28px Inter";
@@ -649,73 +854,128 @@ function topo(ctx,chip,accent,dark){
 }
 
 function desenharSlide(ctx,sp,opts){
-  const {idx,total,accent,chip,foto}=opts;
+  const {idx,total,chip,foto,modo}=opts;
+  const est=opts.estilo||ESTILO_PADRAO,cores=est.cores||{};
+  let accent=opts.accent;
+  if(cores.acento)accent={bg:cores.acento,fg:corClara(cores.acento)?DARK:"#FFFFFF"};
+  const fotoFundo=(foto&&modo!=="fixa")?foto:null;
+  const fotoFixa=(foto&&modo==="fixa")?foto:null;
+  const tipoDark=sp.tipo==="capa"||sp.tipo==="cta";
+  const bg=cores.fundo||(tipoDark?DARK:"#FFFFFF");
+  const claro=corClara(bg)&&!fotoFundo;
+  const corTitulo=cores.titulo||(claro?"#1A1630":"#FFFFFF");
+  const corTexto=cores.texto||(claro?"#4A4A4A":LAVANDA);
+  const corDestaque=claro?(corClara(accent.bg)?"#B8860B":accent.bg):AMARELO;
   ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  if(fotoFundo)fundoFoto(ctx,fotoFundo,tipoDark);
+  else if(claro)pontosClaros(ctx);
+  else gridEscuro(ctx);
 
-  if(sp.tipo==="capa"||sp.tipo==="cta"){
-    ctx.fillStyle=DARK;ctx.fillRect(0,0,W,H);
-    if(foto)fundoFoto(ctx,foto,true);else gridEscuro(ctx);
-    topo(ctx,chip,accent,true);
-
-    if(sp.tipo==="capa"){
-      balaoDigitando(ctx,80,190,false);
-      const t=ajustarFonte(ctx,String(sp.headline||"").toUpperCase(),"900",920,88,54,5);
-      ctx.fillStyle="#FFFFFF";
-      const fim=desenharLinhas(ctx,t.lines,80,470+t.size,t.size*1.14);
-      ctx.font="500 38px Inter";ctx.fillStyle=LAVANDA;
-      desenharLinhas(ctx,quebrar(ctx,sp.sub,880),80,fim+34,56);
-      metaBar(ctx,idx,total,accent,true);
+  if(sp.tipo==="capa"){
+    topo(ctx,chip,accent,!claro);
+    const T=String(sp.headline||"").toUpperCase();
+    const marks=marcarDestaque(T,String(sp.destaque||"").toUpperCase());
+    const subPx=Math.round(38*mult(est,"subtitulo")),subLH=Math.round(subPx*1.47);
+    if(fotoFundo){
+      // Composição centralizada da ref: título + sub + pill "Arrasta para o lado ›"
+      const t=ajustarFonteTit(ctx,est,T,940,92*mult(est,"titulo"),52,5);
+      const lineH=Math.round(t.px*t.lh);
+      ctx.font="500 "+subPx+"px Inter";
+      const subLines=quebrar(ctx,sp.sub,820);
+      const blocoH=t.lines.length*lineH+44+subLines.length*subLH+64+90;
+      const y=Math.max(320,180+(H-330-blocoH)/2);
+      ctx.font=t.font;
+      const fimT=desenharLinhasT(ctx,t.lines,marks,W/2,y+t.px,lineH,"center",corTitulo,corDestaque);
+      ctx.font="500 "+subPx+"px Inter";ctx.fillStyle=corTexto;
+      const fimS=desenharLinhas(ctx,quebrar(ctx,sp.sub,820),W/2,fimT+44,subLH,"center");
+      pill(ctx,W/2,fimS+38,"Arrasta para o lado  ›",ROXO,"#FFFFFF",34,true);
     }else{
-      balaoDigitando(ctx,W/2,240,true);
-      const t=ajustarFonte(ctx,String(sp.titulo||"").toUpperCase(),"900",900,76,48,4);
-      ctx.fillStyle="#FFFFFF";
-      const fim=desenharLinhas(ctx,t.lines,W/2,430+t.size,t.size*1.14,"center");
-      ctx.font="400 40px Inter";ctx.fillStyle=LAVANDA;
-      const fim2=desenharLinhas(ctx,quebrar(ctx,sp.texto,860),W/2,fim+40,60,"center");
-      ctx.font="700 30px Inter";ctx.fillStyle="rgba(255,255,255,.7)";ctx.textAlign="center";
-      ctx.fillText("COMENTA AÍ EMBAIXO 👇",W/2,Math.max(fim2+70,880));
-      pill(ctx,W/2,Math.max(fim2+100,910),String(sp.keyword||"").toUpperCase(),AMARELO,DARK,60,true);
-      metaBar(ctx,idx,total,accent,true,true);
+      balaoDigitando(ctx,80,190,false);
+      const t=ajustarFonteTit(ctx,est,T,920,88*mult(est,"titulo"),50,5);
+      const lineH=Math.round(t.px*t.lh);
+      const yT=fotoFixa?320:470;
+      ctx.font=t.font;
+      const fim=desenharLinhasT(ctx,t.lines,marks,80,yT+t.px,lineH,"left",corTitulo,corDestaque);
+      ctx.font="500 "+subPx+"px Inter";ctx.fillStyle=corTexto;
+      const fimS=desenharLinhas(ctx,quebrar(ctx,sp.sub,880),80,fim+34,subLH);
+      if(fotoFixa)cardFotoAuto(ctx,fotoFixa,fimS+44);
     }
+    metaBar(ctx,idx,total,accent,!claro);
     return;
   }
 
-  // Slide interno (claro)
-  ctx.fillStyle="#FFFFFF";ctx.fillRect(0,0,W,H);
-  const temFoto=!!foto;
-  if(temFoto)fundoFoto(ctx,foto,false);else pontosClaros(ctx);
+  if(sp.tipo==="cta"){
+    topo(ctx,chip,accent,!claro);
+    const T=String(sp.titulo||"").toUpperCase();
+    const marks=marcarDestaque(T,String(sp.destaque||"").toUpperCase());
+    if(!fotoFixa)balaoDigitando(ctx,W/2,240,true);
+    const t=ajustarFonteTit(ctx,est,T,900,76*mult(est,"titulo"),48,4);
+    const lineH=Math.round(t.px*t.lh);
+    const yT=fotoFixa?240:430;
+    ctx.font=t.font;
+    const fim=desenharLinhasT(ctx,t.lines,marks,W/2,yT+t.px,lineH,"center",corTitulo,corDestaque);
+    const corpoPx=Math.round(40*mult(est,"texto"));
+    ctx.font="400 "+corpoPx+"px Inter";ctx.fillStyle=corTexto;
+    const fim2=desenharLinhas(ctx,quebrar(ctx,sp.texto,860),W/2,fim+40,Math.round(corpoPx*1.5),"center");
+    ctx.font="700 30px Inter";ctx.fillStyle=claro?"#6B6487":"rgba(255,255,255,.7)";ctx.textAlign="center";
+    const yCom=fotoFixa?fim2+64:Math.max(fim2+70,880);
+    ctx.fillText("COMENTA AÍ EMBAIXO 👇",W/2,yCom);
+    const kw=pill(ctx,W/2,yCom+30,String(sp.keyword||"").toUpperCase(),AMARELO,DARK,Math.round(60*mult(est,"keyword")),true);
+    if(fotoFixa)cardFotoAuto(ctx,fotoFixa,yCom+30+kw.h+54);
+    metaBar(ctx,idx,total,accent,!claro,true);
+    return;
+  }
+
+  // Slide interno
   ctx.fillStyle=accent.bg;ctx.fillRect(0,0,14,H);
-  topo(ctx,chip,accent,temFoto);
+  topo(ctx,chip,accent,!claro);
 
   const mx=96;
   const etiq=String(sp.etiqueta||"").trim();
+  const T=String(sp.titulo||"").toUpperCase();
+  const marks=marcarDestaque(T,String(sp.destaque||"").toUpperCase());
+  const etiqPx=Math.round(30*mult(est,"etiqueta")),etiqH=Math.round(etiqPx*2.2)+58;
 
   // Mede o bloco inteiro antes de desenhar, pra distribuir na vertical (evita slide com metade vazia)
-  const t=ajustarFonte(ctx,String(sp.titulo||"").toUpperCase(),"800",W-mx-90,64,42,4);
-  let corpo=38,lineH=57;
+  const t=ajustarFonteTit(ctx,est,T,W-mx-90,64*mult(est,"titulo"),40,4);
+  const lineHT=Math.round(t.px*t.lh);
+  let corpo=Math.round(38*mult(est,"texto")),lineH=Math.round(corpo*1.5);
   ctx.font="400 "+corpo+"px Inter";
   let linhas=quebrar(ctx,sp.texto,W-mx-90);
-  const alturaBloco=()=> (etiq?124:30)+t.size+t.lines.length*t.size*1.16+96+corpo+linhas.length*lineH;
-  if(alturaBloco()>940){corpo=32;lineH=48;ctx.font="400 32px Inter";linhas=quebrar(ctx,sp.texto,W-mx-90);}
+  const alturaBloco=()=> (etiq?etiqH:30)+t.px+t.lines.length*lineHT+96+corpo+linhas.length*lineH;
+  if(!fotoFixa&&alturaBloco()>940){corpo=Math.round(32*mult(est,"texto"));lineH=Math.round(corpo*1.5);ctx.font="400 "+corpo+"px Inter";linhas=quebrar(ctx,sp.texto,W-mx-90);}
 
-  let y=200+Math.max(0,(960-alturaBloco())*0.35);
+  // Com imagem fixa o texto sobe pro topo; sem imagem, centraliza na vertical
+  let y=fotoFixa?190:200+Math.max(0,(960-alturaBloco())*0.35);
   if(etiq){
     const c=corEtiqueta(etiq,accent);
-    pill(ctx,mx,y,etiq.toUpperCase(),c.bg,c.fg,30,false);
-    y+=124;
+    pill(ctx,mx,y,etiq.toUpperCase(),c.bg,c.fg,etiqPx,false);
+    y+=etiqH;
   }else y+=30;
 
-  ctx.font="800 "+t.size+"px Inter";
-  ctx.fillStyle=temFoto?"#FFFFFF":"#1A1630";
-  const fimTitulo=desenharLinhas(ctx,t.lines,mx,y+t.size,t.size*1.16);
+  ctx.font=t.font;
+  const fimTitulo=desenharLinhasT(ctx,t.lines,marks,mx,y+t.px,lineHT,"left",corTitulo,corDestaque);
 
   ctx.fillStyle=accent.bg;rr(ctx,mx,fimTitulo+26,150,10,5);ctx.fill();
 
   ctx.font="400 "+corpo+"px Inter";
-  ctx.fillStyle=temFoto?"#E7E2F7":"#4A4A4A";
-  desenharLinhas(ctx,linhas,mx,fimTitulo+96+corpo,lineH);
+  ctx.fillStyle=corTexto;
+  const fimTexto=desenharLinhas(ctx,linhas,mx,fimTitulo+96+corpo,lineH);
 
-  metaBar(ctx,idx,total,accent,temFoto);
+  if(fotoFixa)cardFotoAuto(ctx,fotoFixa,fimTexto+50);
+
+  metaBar(ctx,idx,total,accent,!claro);
+}
+/* ══ ENGINE-END ══ */
+
+function montarSlides(projeto){
+  const capa=projeto.capaIdx!=null?projeto.capas[projeto.capaIdx]:null;
+  if(!capa||!projeto.cta||!projeto.slides.length) return [];
+  const list=[{key:"capa",tipo:"capa",headline:capa.headline,sub:capa.subtitulo,destaque:capa.destaque||"",prompt_imagem:capa.prompt_imagem||""}];
+  projeto.slides.forEach((s,i)=>list.push({key:"s"+i,tipo:"interno",etiqueta:s.etiqueta,titulo:s.titulo,texto:s.texto,destaque:s.destaque||"",prompt_imagem:s.prompt_imagem||""}));
+  list.push({key:"cta",tipo:"cta",titulo:projeto.cta.titulo,texto:projeto.cta.texto,keyword:projeto.cta.palavra_chave,destaque:projeto.cta.destaque||"",prompt_imagem:projeto.cta.prompt_imagem||""});
+  return list;
 }
 
 const imgCache={};
@@ -729,17 +989,76 @@ function loadImage(dataURL){
   });
 }
 function promptPadrao(sp,projeto){
+  if(sp.prompt_imagem)return sp.prompt_imagem;
   const assunto=sp.tipo==="interno"?sp.titulo:(projeto.tema||sp.headline||sp.titulo||"");
   return "Fundo fotográfico vertical, proporção 4:5 (retrato), para um slide de carrossel do Instagram. PROIBIDO qualquer texto, letra, número ou logotipo na imagem. Cena relacionada a: "+assunto+". Estilo: fotografia profissional, tons escuros, iluminação dramática com luz roxa, clima tech.";
 }
 
-function StepSlides({projeto,fotos,setFotos,back}){
+const COMPONENTES={
+  capa:[["titulo","Título"],["subtitulo","Subtítulo"]],
+  interno:[["etiqueta","Etiqueta"],["titulo","Título"],["texto","Texto"]],
+  cta:[["titulo","Título"],["texto","Texto"],["keyword","Palavra-chave"]],
+};
+function coresPadrao(tipo,accent){
+  const dark=tipo!=="interno";
+  return {fundo:dark?DARK:"#FFFFFF",titulo:dark?"#FFFFFF":"#1A1630",texto:dark?"#C4B0F5":"#4A4A4A",acento:accent.bg};
+}
+function Seg({value,options,onChange}){
+  return(
+    <div style={{display:"inline-flex",border:"1.5px solid var(--border2)",borderRadius:9,overflow:"hidden"}}>
+      {options.map(o=>(
+        <button key={o} onClick={()=>onChange(o)} style={{padding:"6px 12px",border:"none",cursor:"pointer",fontWeight:700,fontSize:12,fontFamily:"inherit",
+          background:value===o?"var(--purple)":"var(--surface)",color:value===o?"#fff":"var(--text2)"}}>{o}</button>
+      ))}
+    </div>
+  );
+}
+// Mockup fiel do post no feed do Instagram (ref: Captura 202739)
+function FeedModal({thumbs,headline,onClose}){
+  const [i,setI]=useState(0);
+  const n=thumbs.length;
+  const icone=d=><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#262626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
+  const navBtn={position:"absolute",top:"50%",transform:"translateY(-50%)",width:28,height:28,borderRadius:"50%",border:"none",background:"rgba(255,255,255,.92)",cursor:"pointer",fontSize:16,fontWeight:800,lineHeight:1,color:"#262626",boxShadow:"0 1px 4px rgba(0,0,0,.3)"};
+  return(
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(26,22,48,.6)",zIndex:50,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:14,width:"100%",maxWidth:400,maxHeight:"94vh",overflowY:"auto"}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px"}}>
+          <div style={{width:34,height:34,borderRadius:"50%",background:"linear-gradient(135deg,#7447E1,#9333EA)",color:"#fff",fontWeight:800,fontSize:15,display:"flex",alignItems:"center",justifyContent:"center"}}>R</div>
+          <span style={{fontWeight:700,fontSize:13,color:"#262626"}}>respon_dm</span>
+          <svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#0095F6"/><path d="M7 12.5l3 3 7-7" stroke="#fff" strokeWidth="2.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <span style={{marginLeft:"auto",color:"#262626",fontWeight:800}}>⋯</span>
+        </div>
+        <div style={{position:"relative"}}>
+          <img src={thumbs[i]} style={{width:"100%",display:"block"}}/>
+          <div style={{position:"absolute",top:12,right:12,background:"rgba(0,0,0,.55)",color:"#fff",fontSize:12,fontWeight:600,borderRadius:999,padding:"4px 10px"}}>{i+1}/{n}</div>
+          {i>0&&<button onClick={()=>setI(i-1)} style={{...navBtn,left:8}}>‹</button>}
+          {i<n-1&&<button onClick={()=>setI(i+1)} style={{...navBtn,right:8}}>›</button>}
+        </div>
+        <div style={{display:"flex",justifyContent:"center",gap:4,padding:"10px 0 2px"}}>
+          {thumbs.map((_,j)=><span key={j} style={{width:6,height:6,borderRadius:"50%",background:j===i?"#0095F6":"#D3D3D3"}}/>)}
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:14,padding:"6px 12px"}}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#FF3040"><path d="M12 21s-7.5-4.7-10-9.3C.5 8 2.6 4.5 6.2 4.5c2.2 0 3.9 1.2 4.8 3 1-1.8 2.7-3 4.9-3 3.5 0 5.6 3.5 4.1 7.2C17.5 16.3 12 21 12 21z"/></svg>
+          {icone("M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z")}
+          {icone("M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z")}
+          <span style={{marginLeft:"auto"}}>{icone("M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z")}</span>
+        </div>
+        <div style={{padding:"0 12px 4px",fontWeight:700,fontSize:13,color:"#262626"}}>1.284 curtidas</div>
+        <div style={{padding:"0 12px 14px",fontSize:13,color:"#262626",lineHeight:1.4}}><b>respon_dm</b> {headline}</div>
+      </div>
+    </div>
+  );
+}
+
+function StepSlides({projeto,update,fotos,setFotos,back}){
   const [thumbs,setThumbs]=useState([]);
   const [sel,setSel]=useState(null);
   const [busyFoto,setBusyFoto]=useState(false);
   const [promptFoto,setPromptFoto]=useState("");
   const [err,setErr]=useState("");
   const [renderizando,setRenderizando]=useState(false);
+  const [escopo,setEscopo]=useState("slide"); // "slide" | "global"
+  const [feed,setFeed]=useState(false);
 
   const specs=montarSlides(projeto);
   const cat=CATEGORIAS.find(c=>c.id===projeto.categoria)||CATEGORIAS[3];
@@ -749,23 +1068,28 @@ function StepSlides({projeto,fotos,setFotos,back}){
     let vivo=true;
     setRenderizando(true);
     (async()=>{
+      const fams=new Set([(projeto.estilo||{}).fonteTitulo||"Anton"]);
+      Object.values(projeto.ajustes||{}).forEach(a=>{if(a.fonteTitulo)fams.add(a.fonteTitulo);});
       try{
-        await Promise.all(["900 80px Inter","800 60px Inter","600 28px Inter","500 38px Inter","400 38px Inter"]
-          .map(f=>document.fonts.load(f)));
+        await Promise.all([
+          ...["800 60px Inter","700 30px Inter","600 28px Inter","500 38px Inter","400 38px Inter"].map(f=>document.fonts.load(f)),
+          ...[...fams].map(f=>document.fonts.load((FONTES[f]||FONTES.Anton).peso+" 90px '"+f+"'")),
+        ]);
       }catch(e){}
       const urls=[];
       for(let i=0;i<specs.length;i++){
         const sp=specs[i];
         const cv=document.createElement("canvas");cv.width=W;cv.height=H;
+        const foto=fotos[sp.key];
         let img=null;
-        if(fotos[sp.key]){try{img=await loadImage(fotos[sp.key]);}catch(e){}}
-        desenharSlide(cv.getContext("2d"),sp,{idx:i,total:specs.length,accent:cat.accent,chip:cat.chip,foto:img});
+        if(foto){try{img=await loadImage(foto.data);}catch(e){}}
+        desenharSlide(cv.getContext("2d"),sp,{idx:i,total:specs.length,accent:cat.accent,chip:cat.chip,foto:img,modo:foto?foto.modo:null,estilo:resolverEstilo(projeto,sp.key)});
         urls.push(cv.toDataURL("image/png"));
       }
       if(vivo){setThumbs(urls);setRenderizando(false);}
     })();
     return()=>{vivo=false;};
-  },[JSON.stringify(projeto.slides),JSON.stringify(projeto.cta),projeto.capaIdx,JSON.stringify(projeto.capas),projeto.categoria,fotos]);
+  },[JSON.stringify(projeto.slides),JSON.stringify(projeto.cta),projeto.capaIdx,JSON.stringify(projeto.capas),projeto.categoria,fotos,JSON.stringify(projeto.estilo),JSON.stringify(projeto.ajustes)]);
 
   useEffect(()=>{
     if(sel!=null&&specs[sel]) setPromptFoto(promptPadrao(specs[sel],projeto));
@@ -783,6 +1107,12 @@ function StepSlides({projeto,fotos,setFotos,back}){
     );
   }
 
+  // Modo padrão da imagem: capa e CTA usam a foto como fundo, internos como card fixo 4:3
+  function modoPadrao(tipo){return tipo==="interno"?"fixa":"fundo";}
+  function guardarFoto(dataURL){
+    const key=specs[sel].key;
+    setFotos({...fotos,[key]:{data:dataURL,modo:(fotos[key]||{}).modo||modoPadrao(specs[sel].tipo)}});
+  }
   async function gerarFotoIA(){
     if(sel==null) return;
     setBusyFoto(true);setErr("");
@@ -794,7 +1124,7 @@ function StepSlides({projeto,fotos,setFotos,back}){
       const part=parts.find(p=>(p.inlineData&&p.inlineData.data)||(p.inline_data&&p.inline_data.data));
       if(!part) throw new Error("A IA não retornou imagem. Tente ajustar o prompt.");
       const inline=part.inlineData||part.inline_data;
-      setFotos({...fotos,[specs[sel].key]:"data:"+(inline.mimeType||inline.mime_type||"image/png")+";base64,"+inline.data});
+      guardarFoto("data:"+(inline.mimeType||inline.mime_type||"image/png")+";base64,"+inline.data);
     }catch(e){setErr(String(e.message||e));}
     setBusyFoto(false);
   }
@@ -802,13 +1132,31 @@ function StepSlides({projeto,fotos,setFotos,back}){
     const f=ev.target.files&&ev.target.files[0];
     if(!f||sel==null) return;
     const reader=new FileReader();
-    reader.onload=()=>setFotos({...fotos,[specs[sel].key]:reader.result});
+    reader.onload=()=>guardarFoto(reader.result);
     reader.readAsDataURL(f);
     ev.target.value="";
   }
   function removerFoto(){
     if(sel==null) return;
     const novo={...fotos};delete novo[specs[sel].key];setFotos(novo);
+  }
+  function setModo(m){
+    const key=specs[sel].key,f=fotos[key];
+    if(f)setFotos({...fotos,[key]:{...f,modo:m}});
+  }
+  // Escreve tamanhos/cores/fonte no escopo escolhido (este slide ou global)
+  function setAjuste(patch){
+    if(escopo==="global"){
+      const e=projeto.estilo||{};
+      update({estilo:{...e,...patch,tamanhos:{...(e.tamanhos||{}),...(patch.tamanhos||{})},cores:{...(e.cores||{}),...(patch.cores||{})}}});
+    }else{
+      const key=specs[sel].key,a=(projeto.ajustes||{})[key]||{};
+      update({ajustes:{...(projeto.ajustes||{}),[key]:{...a,...patch,tamanhos:{...(a.tamanhos||{}),...(patch.tamanhos||{})},cores:{...(a.cores||{}),...(patch.cores||{})}}}});
+    }
+  }
+  function resetarEstilo(){
+    if(escopo==="global")update({estilo:{fonteTitulo:"Anton",tamanhos:{},cores:{}}});
+    else{const novo={...(projeto.ajustes||{})};delete novo[specs[sel].key];update({ajustes:novo});}
   }
   function baixarSlide(i){
     const a=document.createElement("a");
@@ -827,9 +1175,12 @@ function StepSlides({projeto,fotos,setFotos,back}){
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,marginBottom:6}}>
         <h2 style={{fontSize:22,fontWeight:800}}>Seus slides</h2>
-        <Btn onClick={baixarZip} disabled={renderizando||!thumbs.length}>⬇ Baixar todos (.zip)</Btn>
+        <div style={{display:"flex",gap:10}}>
+          <Btn variant="secondary" onClick={()=>setFeed(true)} disabled={renderizando||!thumbs.length}>👁 Ver no feed</Btn>
+          <Btn onClick={baixarZip} disabled={renderizando||!thumbs.length}>⬇ Baixar todos (.zip)</Btn>
+        </div>
       </div>
-      <p style={{color:"var(--text2)",marginBottom:22}}>Clique num slide pra colocar imagem de fundo (IA ou upload). O texto é sempre desenhado em código, nítido.</p>
+      <p style={{color:"var(--text2)",marginBottom:22}}>Clique num slide pra ajustar imagem, tamanhos, cores e fonte. O texto é sempre desenhado em código, nítido.</p>
       <ErrBox msg={err} onClose={()=>setErr("")}/>
       {renderizando&&<div style={{fontSize:13,color:"var(--text3)",marginBottom:12}}>Desenhando slides...</div>}
 
@@ -846,10 +1197,32 @@ function StepSlides({projeto,fotos,setFotos,back}){
         ))}
       </div>
 
-      {sel!=null&&specs[sel]&&(
+      {sel!=null&&specs[sel]&&(()=>{
+        const tipo=specs[sel].tipo;
+        const f=fotos[specs[sel].key];
+        const est=resolverEstilo(projeto,specs[sel].key);
+        const cores={...coresPadrao(tipo,cat.accent),...(est.cores||{})};
+        const secao={fontSize:12,fontWeight:800,textTransform:"uppercase",letterSpacing:.5,color:"var(--purple)",margin:"18px 0 10px"};
+        return(
         <Card style={{marginBottom:22,borderLeft:"5px solid var(--purple)"}}>
-          <div style={{fontWeight:800,fontSize:15,marginBottom:14}}>Imagem de fundo do slide {sel+1}</div>
-          <Field label="Prompt da imagem (edite à vontade antes de gerar)">
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
+            <div style={{fontWeight:800,fontSize:15}}>Ajustes do slide {sel+1}</div>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontSize:11,fontWeight:700,color:"var(--text3)"}}>APLICAR EM:</span>
+              <Seg value={escopo==="slide"?"Só este slide":"Todos"} options={["Só este slide","Todos"]}
+                onChange={v=>setEscopo(v==="Todos"?"global":"slide")}/>
+            </div>
+          </div>
+
+          <div style={secao}>Imagem</div>
+          {f&&(
+            <Field label="Como a imagem entra no slide">
+              <Seg value={f.modo==="fixa"?"Imagem fixa (card 4:3)":"Fundo do slide"}
+                options={["Fundo do slide","Imagem fixa (card 4:3)"]}
+                onChange={v=>setModo(v==="Fundo do slide"?"fundo":"fixa")}/>
+            </Field>
+          )}
+          <Field label="Prompt da imagem (a IA do roteiro já sugere um, edite à vontade)">
             <textarea rows={3} style={{...inputStyle,resize:"vertical"}} value={promptFoto} onChange={e=>setPromptFoto(e.target.value)}/>
           </Field>
           <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
@@ -860,11 +1233,40 @@ function StepSlides({projeto,fotos,setFotos,back}){
               <span style={{display:"inline-block",padding:"12px 22px",borderRadius:12,fontWeight:700,fontSize:14,cursor:"pointer",border:"1.5px solid var(--border2)",background:"var(--surface)"}}>📁 Subir imagem</span>
               <input type="file" accept="image/*" onChange={subirFoto} style={{display:"none"}}/>
             </label>
-            {fotos[specs[sel].key]&&<Btn variant="secondary" onClick={removerFoto}>Remover imagem</Btn>}
+            {f&&<Btn variant="secondary" onClick={removerFoto}>Remover imagem</Btn>}
           </div>
           <div style={{fontSize:11,color:"var(--text3)",marginTop:12}}>As imagens não ficam salvas no rascunho: se fechar a aba, será preciso gerar ou subir de novo.</div>
+
+          <div style={secao}>Tamanhos</div>
+          {COMPONENTES[tipo].map(([comp,label])=>(
+            <div key={comp} style={{display:"flex",alignItems:"center",gap:12,marginBottom:8}}>
+              <span style={{width:110,fontSize:13,fontWeight:600,color:"var(--text2)"}}>{label}</span>
+              <Seg value={(est.tamanhos||{})[comp]||"M"} options={["P","M","G","GG"]}
+                onChange={v=>setAjuste({tamanhos:{[comp]:v}})}/>
+            </div>
+          ))}
+
+          <div style={secao}>Fonte dos títulos</div>
+          <select value={est.fonteTitulo} onChange={e=>setAjuste({fonteTitulo:e.target.value})} style={{...inputStyle,maxWidth:240}}>
+            {Object.keys(FONTES).map(f2=><option key={f2} value={f2}>{f2}</option>)}
+          </select>
+
+          <div style={secao}>Cores</div>
+          <div style={{display:"flex",gap:18,flexWrap:"wrap",alignItems:"flex-end"}}>
+            {[["fundo","Fundo"],["titulo","Título"],["texto","Texto de apoio"],["acento","Acento"]].map(([c,label])=>(
+              <label key={c} style={{display:"flex",flexDirection:"column",gap:4,fontSize:12,fontWeight:600,color:"var(--text2)",cursor:"pointer"}}>
+                {label}
+                <input type="color" value={cores[c]} onChange={e=>setAjuste({cores:{[c]:e.target.value}})}
+                  style={{width:64,height:34,border:"1.5px solid var(--border2)",borderRadius:8,padding:2,cursor:"pointer",background:"var(--surface)"}}/>
+              </label>
+            ))}
+            <Btn variant="ghost" onClick={resetarEstilo}>↺ Resetar {escopo==="global"?"ajustes globais":"ajustes deste slide"}</Btn>
+          </div>
         </Card>
-      )}
+        );
+      })()}
+
+      {feed&&<FeedModal thumbs={thumbs} headline={(projeto.capas[projeto.capaIdx]||{}).headline||""} onClose={()=>setFeed(false)}/>}
 
       <Btn variant="secondary" onClick={back}>← Voltar ao roteiro</Btn>
     </div>
@@ -874,7 +1276,7 @@ function StepSlides({projeto,fotos,setFotos,back}){
 /* ─────────────────────────────────────────────
    App
    ───────────────────────────────────────────── */
-const PROJETO_VAZIO={categoria:null,tema:"",link:"",textoPronto:"",qtdSlides:8,capas:[],capaIdx:null,slides:[],cta:null};
+const PROJETO_VAZIO={categoria:null,tema:"",link:"",textoPronto:"",qtdSlides:8,capas:[],capaIdx:null,slides:[],cta:null,estilo:{fonteTitulo:"Anton",tamanhos:{},cores:{}},ajustes:{}};
 
 function App(){
   const [authReady,setAuthReady]=useState(false);
@@ -921,7 +1323,7 @@ function App(){
       {step===0&&<StepCategoria projeto={projeto} update={update} next={()=>setStep(1)}/>}
       {step===1&&<StepTema projeto={projeto} update={update} next={()=>setStep(2)} back={()=>setStep(0)}/>}
       {step===2&&<StepRoteiro projeto={projeto} update={update} next={()=>setStep(3)} back={()=>setStep(1)}/>}
-      {step===3&&<StepSlides projeto={projeto} fotos={fotos} setFotos={setFotos} back={()=>setStep(2)}/>}
+      {step===3&&<StepSlides projeto={projeto} update={update} fotos={fotos} setFotos={setFotos} back={()=>setStep(2)}/>}
     </div>
   );
 }
