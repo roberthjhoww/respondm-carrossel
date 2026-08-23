@@ -842,26 +842,60 @@ function fundoFoto(ctx,img,forte){
   v.addColorStop(1,"rgba(26,26,46,.5)");
   ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
 }
-// Card de imagem fixa 4:3 (cantos arredondados, moldura branca, sombra), como na ref do Studio
-function cardFoto(ctx,img,x,y,w,h){
-  ctx.save();
-  ctx.shadowColor="rgba(10,8,24,.35)";ctx.shadowBlur=46;ctx.shadowOffsetY=20;
-  ctx.fillStyle="#FFFFFF";rr(ctx,x,y,w,h,30);ctx.fill();
-  ctx.restore();
-  const p=14,iw=w-2*p,ih=h-2*p;
-  ctx.save();rr(ctx,x+p,y+p,iw,ih,20);ctx.clip();
-  const s=Math.max(iw/img.width,ih/img.height);
-  const dw=img.width*s,dh=img.height*s;
-  ctx.drawImage(img,x+p+(iw-dw)/2,y+p+(ih-dh)/2,dw,dh);
-  ctx.restore();
+// Frame de print no estilo do card do canal do WhatsApp (HTML UTEIS/CANAL WHATSAPP):
+// fundo quase preto, borda roxa fina e cantos arredondados. No modo "recortado" ele arredonda
+// só em cima e fica sem borda embaixo, porque vaza pro rodapé do slide em vez de flutuar.
+function caminhoFrame(ctx,x,y,w,h,r,inteiro){
+  ctx.beginPath();
+  ctx.moveTo(x,y+h);
+  ctx.lineTo(x,y+r);
+  ctx.arcTo(x,y,x+r,y,r);
+  ctx.lineTo(x+w-r,y);
+  ctx.arcTo(x+w,y,x+w,y+r,r);
+  if(inteiro){
+    ctx.lineTo(x+w,y+h-r);
+    ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+    ctx.lineTo(x+r,y+h);
+    ctx.arcTo(x,y+h,x,y+h-r,r);
+  }else{
+    ctx.lineTo(x+w,y+h);
+  }
 }
-// Encaixa o card 4:3 centralizado entre yTop e a área da metaBar; some se não houver espaço
-function cardFotoAuto(ctx,img,yTop){
-  const yMax=H-180;
-  let w=W-2*96,h=w*.75;
-  if(yTop+h>yMax){h=yMax-yTop;w=h/.75;}
-  if(h<230)return;
-  cardFoto(ctx,img,(W-w)/2,yTop,w,h);
+function frameFoto(ctx,img,x,y,w,h,inteiro){
+  const R=26;
+  ctx.save();
+  ctx.shadowColor="rgba(8,4,24,.5)";ctx.shadowBlur=44;ctx.shadowOffsetY=16;
+  ctx.fillStyle="#0A0118";
+  caminhoFrame(ctx,x,y,w,h,R,inteiro);ctx.closePath();ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  caminhoFrame(ctx,x,y,w,h,R,inteiro);ctx.closePath();ctx.clip();
+  // recortado preenche o frame (cover); inteiro mostra a imagem toda, sem cortar nada (contain)
+  const s=inteiro?Math.min(w/img.width,h/img.height):Math.max(w/img.width,h/img.height);
+  const dw=img.width*s,dh=img.height*s;
+  ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+  ctx.restore();
+
+  ctx.strokeStyle="rgba(139,92,246,.45)";ctx.lineWidth=3;
+  caminhoFrame(ctx,x+1.5,y+1.5,w-3,h-(inteiro?3:0),R,inteiro);
+  if(inteiro)ctx.closePath();
+  ctx.stroke();  // sem closePath no recortado = sem linha embaixo
+}
+// Espaço mínimo que o print sempre recebe, pra ele nunca sumir calado como acontecia no card 4:3
+const FRAME_MIN=330;
+function frameAuto(ctx,img,yTop,inteiro){
+  const yFim=H-108;
+  let x=96,w=W-2*96,h=yFim-yTop;
+  if(h<FRAME_MIN){h=FRAME_MIN;yTop=yFim-h;}
+  if(inteiro){
+    // o frame assume a proporção da imagem, então nada é cortado e não sobra tarja preta:
+    // print largo usa a largura toda, print vertical estreita o frame e centraliza
+    const prop=img.height/img.width;
+    if(w*prop<=h) h=Math.round(w*prop);
+    else{w=Math.round(h/prop);x=Math.round((W-w)/2);}
+  }
+  frameFoto(ctx,img,x,yTop,w,h,inteiro);
 }
 function gridEscuro(ctx){
   ctx.strokeStyle="rgba(196,176,245,0.06)";ctx.lineWidth=1;
@@ -918,8 +952,9 @@ function desenharSlide(ctx,sp,opts){
   const est=opts.estilo||ESTILO_PADRAO,cores=est.cores||{};
   let accent=opts.accent;
   if(cores.acento)accent={bg:cores.acento,fg:corClara(cores.acento)?DARK:"#FFFFFF"};
-  const fotoFundo=(foto&&modo!=="fixa")?foto:null;
-  const fotoFixa=(foto&&modo==="fixa")?foto:null;
+  const fotoFundo=(foto&&(!modo||modo==="fundo"))?foto:null;
+  const fotoFixa=(foto&&(modo==="fixa"||modo==="inteira"))?foto:null;
+  const inteira=modo==="inteira";
   const tipoDark=sp.tipo==="capa"||sp.tipo==="cta";
   const bg=cores.fundo||(tipoDark?DARK:"#FFFFFF");
   const claro=corClara(bg)&&!fotoFundo;
@@ -952,14 +987,14 @@ function desenharSlide(ctx,sp,opts){
       pill(ctx,W/2,fimS+38,"Arrasta para o lado  ›",ROXO,"#FFFFFF",34,true);
     }else{
       balaoDigitando(ctx,80,190,false);
-      const t=ajustarFonteTit(ctx,est,T,920,88*mult(est,"titulo"),50,5);
+      const t=ajustarFonteTit(ctx,est,T,920,(fotoFixa?70:88)*mult(est,"titulo"),46,fotoFixa?3:5);
       const lineH=Math.round(t.px*t.lh);
       const yT=fotoFixa?320:470;
       ctx.font=t.font;
       const fim=desenharLinhasT(ctx,t.lines,marks,80,yT+t.px,lineH,"left",corTitulo,corDestaque);
       ctx.font="500 "+subPx+"px Inter";ctx.fillStyle=corTexto;
       const fimS=desenharLinhas(ctx,quebrar(ctx,sp.sub,880),80,fim+34,subLH);
-      if(fotoFixa)cardFotoAuto(ctx,fotoFixa,fimS+44);
+      if(fotoFixa)frameAuto(ctx,fotoFixa,fimS+44,inteira);
     }
     metaBar(ctx,idx,total,accent,!claro);
     return;
@@ -970,7 +1005,7 @@ function desenharSlide(ctx,sp,opts){
     const T=String(sp.titulo||"").toUpperCase();
     const marks=marcarDestaque(T,String(sp.destaque||"").toUpperCase());
     if(!fotoFixa)balaoDigitando(ctx,W/2,240,true);
-    const t=ajustarFonteTit(ctx,est,T,900,76*mult(est,"titulo"),48,4);
+    const t=ajustarFonteTit(ctx,est,T,900,(fotoFixa?58:76)*mult(est,"titulo"),44,fotoFixa?3:4);
     const lineH=Math.round(t.px*t.lh);
     const yT=fotoFixa?240:430;
     ctx.font=t.font;
@@ -982,7 +1017,7 @@ function desenharSlide(ctx,sp,opts){
     const yCom=fotoFixa?fim2+64:Math.max(fim2+70,880);
     ctx.fillText("COMENTA AÍ EMBAIXO 👇",W/2,yCom);
     const kw=pill(ctx,W/2,yCom+30,String(sp.keyword||"").toUpperCase(),AMARELO,DARK,Math.round(60*mult(est,"keyword")),true);
-    if(fotoFixa)cardFotoAuto(ctx,fotoFixa,yCom+30+kw.h+54);
+    if(fotoFixa)frameAuto(ctx,fotoFixa,yCom+30+kw.h+40,inteira);
     metaBar(ctx,idx,total,accent,!claro,true);
     return;
   }
@@ -998,13 +1033,14 @@ function desenharSlide(ctx,sp,opts){
   const etiqPx=Math.round(30*mult(est,"etiqueta")),etiqH=Math.round(etiqPx*2.2)+58;
 
   // Mede o bloco inteiro antes de desenhar, pra distribuir na vertical (evita slide com metade vazia)
-  const t=ajustarFonteTit(ctx,est,T,W-mx-90,64*mult(est,"titulo"),40,4);
+  const t=ajustarFonteTit(ctx,est,T,W-mx-90,(fotoFixa?56:64)*mult(est,"titulo"),36,fotoFixa?3:4);
   const lineHT=Math.round(t.px*t.lh);
   let corpo=Math.round(38*mult(est,"texto")),lineH=Math.round(corpo*1.5);
   ctx.font="400 "+corpo+"px Inter";
   let linhas=quebrar(ctx,sp.texto,W-mx-90);
   const alturaBloco=()=> (etiq?etiqH:30)+t.px+t.lines.length*lineHT+96+corpo+linhas.length*lineH;
-  if(!fotoFixa&&alturaBloco()>940){corpo=Math.round(32*mult(est,"texto"));lineH=Math.round(corpo*1.5);ctx.font="400 "+corpo+"px Inter";linhas=quebrar(ctx,sp.texto,W-mx-90);}
+  const tetoTexto=fotoFixa?(H-108-FRAME_MIN-56-190):940;
+  if(alturaBloco()>tetoTexto){corpo=Math.round((fotoFixa?30:32)*mult(est,"texto"));lineH=Math.round(corpo*1.5);ctx.font="400 "+corpo+"px Inter";linhas=quebrar(ctx,sp.texto,W-mx-90);}
 
   // Com imagem fixa o texto sobe pro topo; sem imagem, centraliza na vertical
   let y=fotoFixa?190:200+Math.max(0,(960-alturaBloco())*0.35);
@@ -1025,7 +1061,7 @@ function desenharSlide(ctx,sp,opts){
   ctx.fillStyle=corTexto;
   const fimTexto=desenharLinhas(ctx,linhas,mx,fimTitulo+96+corpo,lineH);
 
-  if(fotoFixa)cardFotoAuto(ctx,fotoFixa,fimTexto+50);
+  if(fotoFixa)frameAuto(ctx,fotoFixa,fimTexto+50,inteira);
 
   metaBar(ctx,idx,total,accent,!claro);
 }
@@ -1056,6 +1092,7 @@ function promptPadrao(sp,projeto){
   return "Fundo fotográfico vertical, proporção 4:5 (retrato), para um slide de carrossel do Instagram. PROIBIDO qualquer texto, letra, número ou logotipo na imagem. Cena relacionada a: "+assunto+". Estilo: fotografia profissional, tons escuros, iluminação dramática com luz roxa, clima tech.";
 }
 
+const MODO_NOME={fundo:"Fundo do slide",fixa:"Print recortado",inteira:"Print inteiro"};
 const COMPONENTES={
   capa:[["titulo","Título"],["subtitulo","Subtítulo"]],
   interno:[["etiqueta","Etiqueta"],["titulo","Título"],["texto","Texto"]],
@@ -1322,9 +1359,15 @@ TAREFA: escreva a legenda completa deste post. A palavra-chave do CTA é `
           <div style={secao}>Imagem</div>
           {f&&(
             <Field label="Como a imagem entra no slide">
-              <Seg value={f.modo==="fixa"?"Imagem fixa (card 4:3)":"Fundo do slide"}
-                options={["Fundo do slide","Imagem fixa (card 4:3)"]}
-                onChange={v=>setModo(v==="Fundo do slide"?"fundo":"fixa")}/>
+              <Seg value={MODO_NOME[f.modo]||MODO_NOME.fundo} options={["Fundo do slide","Print recortado","Print inteiro"]}
+                onChange={v=>setModo(v==="Fundo do slide"?"fundo":(v==="Print inteiro"?"inteira":"fixa"))}/>
+              <div style={{fontSize:11,color:"var(--text3)",marginTop:6}}>
+                {f.modo==="inteira"
+                  ?"A imagem aparece inteira, sem cortar nada. Ideal pra print da tela da ResponDM."
+                  :(f.modo==="fundo"
+                    ?"A imagem ocupa o slide todo, atrás do texto, com escurecimento e vinheta."
+                    :"O print preenche a moldura embaixo do texto e vaza pro rodapé. Pode cortar as bordas da imagem.")}
+              </div>
             </Field>
           )}
           <Field label="Prompt da imagem (a IA do roteiro já sugere um, edite à vontade)">
