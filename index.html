@@ -57,7 +57,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--purple);outline-
 </head>
 <body><div id="root"></div>
 <script type="text/babel">
-const {useState,useEffect}=React;
+const {useState,useEffect,useRef}=React;
 
 // Emails autorizados a usar o app (a segurança real está nas regras do Firestore)
 const AUTHORIZED_EMAILS=["roberthjhow@gmail.com","pablonatan.d.r.s@gmail.com"];
@@ -336,7 +336,17 @@ function DeniedScreen(){
 /* ─────────────────────────────────────────────
    Barra do topo
    ───────────────────────────────────────────── */
-function TopBar({step,setStep,onNovo}){
+function StatusSalvo({estado}){
+  if(!estado) return null;
+  const mapa={
+    salvando:{txt:"Salvando...",cor:"var(--text3)"},
+    salvo:{txt:"✓ Salvo",cor:"var(--green)"},
+    erro:{txt:"⚠ Não salvou",cor:"var(--red)"},
+  };
+  const m=mapa[estado]||mapa.salvo;
+  return <span style={{fontSize:12,fontWeight:700,color:m.cor}}>{m.txt}</span>;
+}
+function TopBar({step,setStep,onNovo,onProjetos,statusSalvo}){
   return(
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"22px 0",borderBottom:"1px solid var(--border)",marginBottom:28,flexWrap:"wrap",gap:14}}>
       <div style={{fontSize:19,fontWeight:800,letterSpacing:"-.02em"}}>respon<span style={{color:"var(--purple)"}}>DM</span> <span style={{color:"var(--text3)",fontWeight:600}}>Carrossel</span></div>
@@ -349,7 +359,11 @@ function TopBar({step,setStep,onNovo}){
           }}>{i+1}. {label}</button>
         ))}
       </div>
-      <Btn variant="ghost" onClick={onNovo}>+ Novo carrossel</Btn>
+      <div style={{display:"flex",alignItems:"center",gap:6}}>
+        <StatusSalvo estado={statusSalvo}/>
+        <Btn variant="ghost" onClick={onProjetos}>📁 Meus carrosséis</Btn>
+        <Btn variant="ghost" onClick={onNovo}>+ Novo</Btn>
+      </div>
     </div>
   );
 }
@@ -1283,16 +1297,122 @@ function StepSlides({projeto,update,fotos,setFotos,back}){
 }
 
 /* ─────────────────────────────────────────────
+   Meus carrosséis (persistência no Firestore)
+   ───────────────────────────────────────────── */
+function TelaProjetos({onAbrir,onVoltar,idAtual}){
+  const [lista,setLista]=useState(null);
+  const [thumbs,setThumbs]=useState({});
+  const [err,setErr]=useState("");
+
+  useEffect(()=>{
+    let vivo=true;
+    fbDB.collection("projetos").orderBy("atualizadoEm","desc").limit(60).get()
+      .then(snap=>{if(vivo)setLista(snap.docs.map(d=>({id:d.id,...d.data()})));})
+      .catch(e=>{if(vivo){setErr("Não consegui carregar a lista: "+(e.message||e));setLista([]);}});
+    return()=>{vivo=false;};
+  },[]);
+
+  // A capa de cada carrossel é desenhada pelo mesmo engine dos slides
+  useEffect(()=>{
+    if(!lista||!lista.length) return;
+    let vivo=true;
+    (async()=>{
+      const fams=new Set(lista.map(p=>((p.estilo||{}).fonteTitulo)||"Anton"));
+      try{
+        await Promise.all([
+          ...[...fams].map(f=>document.fonts.load((FONTES[f]||FONTES.Anton).peso+" 90px '"+f+"'")),
+          document.fonts.load("500 38px Inter"),document.fonts.load("600 28px Inter"),
+        ]);
+      }catch(e){}
+      const out={};
+      for(const p of lista){
+        const capa=(p.capas||[])[p.capaIdx||0];
+        if(!capa) continue;
+        const cat=CATEGORIAS.find(c=>c.id===p.categoria)||CATEGORIAS[0];
+        const cv=document.createElement("canvas");cv.width=W;cv.height=H;
+        desenharSlide(cv.getContext("2d"),
+          {tipo:"capa",headline:capa.headline,sub:capa.subtitulo,destaque:capa.destaque||""},
+          {idx:0,total:p.qtdSlides||8,accent:cat.accent,chip:cat.chip,estilo:resolverEstilo(p,"capa")});
+        out[p.id]=cv.toDataURL("image/png");
+      }
+      if(vivo)setThumbs(out);
+    })();
+    return()=>{vivo=false;};
+  },[lista]);
+
+  async function excluir(p){
+    if(!window.confirm("Excluir este carrossel de vez? Não dá pra desfazer.")) return;
+    try{
+      await fbDB.collection("projetos").doc(p.id).delete();
+      setLista(l=>l.filter(x=>x.id!==p.id));
+    }catch(e){setErr("Não consegui excluir: "+(e.message||e));}
+  }
+  function quando(p){
+    const d=p.atualizadoEm&&p.atualizadoEm.toDate?p.atualizadoEm.toDate():null;
+    if(!d) return "agora há pouco";
+    return d.toLocaleDateString("pt-BR")+" às "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  }
+
+  return(
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,marginBottom:6}}>
+        <h2 style={{fontSize:22,fontWeight:800}}>Meus carrosséis</h2>
+        <Btn variant="secondary" onClick={onVoltar}>← Voltar ao carrossel atual</Btn>
+      </div>
+      <p style={{color:"var(--text2)",marginBottom:22}}>Tudo que você escreve é salvo sozinho. As imagens dos slides não ficam salvas ainda: ao reabrir, gere ou suba de novo.</p>
+      <ErrBox msg={err} onClose={()=>setErr("")}/>
+
+      {lista===null&&<div style={{color:"var(--text3)",padding:30,textAlign:"center"}}>Carregando...</div>}
+      {lista&&lista.length===0&&!err&&(
+        <div style={{background:"var(--surface)",border:"1.5px dashed var(--border2)",borderRadius:16,padding:48,textAlign:"center",color:"var(--text3)"}}>
+          Nenhum carrossel salvo ainda. Assim que a IA gerar as capas, ele aparece aqui sozinho.
+        </div>
+      )}
+
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(230px,1fr))",gap:16}}>
+        {(lista||[]).map(p=>{
+          const cat=CATEGORIAS.find(c=>c.id===p.categoria);
+          const capa=(p.capas||[])[p.capaIdx||0];
+          return(
+            <Card key={p.id} selected={p.id===idAtual} style={{padding:12}}>
+              {thumbs[p.id]
+                ? <img src={thumbs[p.id]} onClick={()=>onAbrir(p)} style={{width:"100%",borderRadius:9,display:"block",cursor:"pointer",border:"1px solid var(--border)"}}/>
+                : <div style={{width:"100%",aspectRatio:"1080/1350",borderRadius:9,background:"var(--surface2)"}}/>}
+              <div style={{fontSize:13,fontWeight:700,lineHeight:1.35,margin:"10px 0 4px"}}>{capa?capa.headline:"(sem capa)"}</div>
+              <div style={{fontSize:11,color:"var(--text3)",marginBottom:10}}>
+                {cat?cat.emoji+" "+cat.nome:"?"} · {(p.slides||[]).length+2} slides<br/>{quando(p)}
+                {p.id===idAtual?<span style={{color:"var(--purple)",fontWeight:800}}><br/>Aberto agora</span>:null}
+              </div>
+              <div style={{display:"flex",gap:8}}>
+                <Btn style={{padding:"8px 14px",fontSize:13,flex:1}} onClick={()=>onAbrir(p)}>Abrir</Btn>
+                <Btn variant="secondary" style={{padding:"8px 12px",fontSize:13}} onClick={()=>excluir(p)} title="Excluir">🗑</Btn>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
    App
    ───────────────────────────────────────────── */
-const PROJETO_VAZIO={categoria:null,tema:"",link:"",textoPronto:"",qtdSlides:8,capas:[],capaIdx:null,slides:[],cta:null,estilo:{fonteTitulo:"Anton",tamanhos:{},cores:{}},ajustes:{}};
+
+const PROJETO_VAZIO={id:null,categoria:null,tema:"",link:"",textoPronto:"",qtdSlides:8,capas:[],capaIdx:null,slides:[],cta:null,estilo:{fonteTitulo:"Anton",tamanhos:{},cores:{}},ajustes:{}};
 
 function App(){
   const [authReady,setAuthReady]=useState(false);
   const [user,setUser]=useState(null);
   const [denied,setDenied]=useState(false);
   const [step,setStep]=useState(0);
-  const [fotos,setFotos]=useState({}); // imagens de fundo por slide (só em memória, dataURLs pesam demais pro localStorage)
+  const [tela,setTela]=useState("wizard");        // "wizard" | "projetos"
+  const [statusSalvo,setStatusSalvo]=useState("");
+  const [fotos,setFotos]=useState({}); // imagens de fundo por slide (só em memória, dataURLs pesam demais pro localStorage e pro Firestore)
+  const timerSalvar=useRef(null);
+  const ultimoSalvo=useRef("");   // último JSON gravado, evita reescrever o que não mudou
+  const idRef=useRef(null);       // id do doc já criado, sincronizado antes do estado
+  const salvando=useRef(false);
   const [projeto,setProjeto]=useState(()=>{
     try{const d=localStorage.getItem(DRAFT_KEY);if(d) return {...PROJETO_VAZIO,...JSON.parse(d)};}catch(e){}
     return {...PROJETO_VAZIO};
@@ -1316,10 +1436,69 @@ function App(){
     try{localStorage.setItem(DRAFT_KEY,JSON.stringify(projeto));}catch(e){}
   },[projeto]);
 
+  // Autosave no Firestore. Só entra depois que a IA gerou as capas (antes disso o localStorage
+  // já cobre) e espera 2,5s parado pra não escrever a cada tecla: a cota do Firebase já estourou
+  // uma vez no app de assinaturas por escrita em excesso.
+  useEffect(()=>{
+    if(!user||!projeto.capas.length) return;
+    const snap=JSON.stringify({...projeto,id:null});
+    if(snap===ultimoSalvo.current) return;
+    clearTimeout(timerSalvar.current);
+    timerSalvar.current=setTimeout(()=>salvar(snap),2500);
+    return()=>clearTimeout(timerSalvar.current);
+  },[projeto,user]);
+
+  async function salvar(snap){
+    // Se um save ainda está voando, espera: sem isso dois saves rápidos criariam dois documentos
+    if(salvando.current){
+      clearTimeout(timerSalvar.current);
+      timerSalvar.current=setTimeout(()=>salvar(snap),1500);
+      return;
+    }
+    salvando.current=true;
+    setStatusSalvo("salvando");
+    const dados={...projeto};
+    delete dados.id;
+    dados.email=user.email;
+    dados.atualizadoEm=firebase.firestore.FieldValue.serverTimestamp();
+    try{
+      const id=projeto.id||idRef.current;
+      if(id){
+        await fbDB.collection("projetos").doc(id).set(dados,{merge:true});
+      }else{
+        dados.criadoEm=firebase.firestore.FieldValue.serverTimestamp();
+        const ref=await fbDB.collection("projetos").add(dados);
+        idRef.current=ref.id;
+        setProjeto(p=>({...p,id:ref.id}));
+      }
+      ultimoSalvo.current=snap;
+      setStatusSalvo("salvo");
+    }catch(e){
+      setStatusSalvo("erro");
+    }
+    salvando.current=false;
+  }
+
   function update(patch){setProjeto(p=>({...p,...patch}));}
+
+  function abrirProjeto(p){
+    const doc={...p};
+    delete doc.atualizadoEm;delete doc.criadoEm;delete doc.email;
+    const aberto={...PROJETO_VAZIO,...doc};
+    clearTimeout(timerSalvar.current);
+    idRef.current=p.id;
+    ultimoSalvo.current=JSON.stringify({...aberto,id:null});
+    setProjeto(aberto);setFotos({});
+    setStep(aberto.slides.length?3:2);
+    setStatusSalvo("salvo");setTela("wizard");
+  }
+
   function novo(){
-    if(projeto.slides.length&&!window.confirm("Começar um carrossel novo? O rascunho atual será apagado."))return;
-    setProjeto({...PROJETO_VAZIO});setFotos({});setStep(0);
+    const naoSalvo=!projeto.id&&!!(projeto.capas.length||projeto.tema.trim());
+    if(naoSalvo&&!window.confirm("O carrossel atual ainda não foi salvo. Começar um novo mesmo assim?"))return;
+    clearTimeout(timerSalvar.current);
+    idRef.current=null;ultimoSalvo.current="";
+    setProjeto({...PROJETO_VAZIO});setFotos({});setStep(0);setStatusSalvo("");setTela("wizard");
   }
 
   if(!authReady) return null;
@@ -1328,11 +1507,18 @@ function App(){
 
   return(
     <div>
-      <TopBar step={step} setStep={setStep} onNovo={novo}/>
-      {step===0&&<StepCategoria projeto={projeto} update={update} next={()=>setStep(1)}/>}
-      {step===1&&<StepTema projeto={projeto} update={update} next={()=>setStep(2)} back={()=>setStep(0)}/>}
-      {step===2&&<StepRoteiro projeto={projeto} update={update} next={()=>setStep(3)} back={()=>setStep(1)}/>}
-      {step===3&&<StepSlides projeto={projeto} update={update} fotos={fotos} setFotos={setFotos} back={()=>setStep(2)}/>}
+      <TopBar step={step} setStep={s=>{setTela("wizard");setStep(s);}} onNovo={novo}
+        onProjetos={()=>setTela("projetos")} statusSalvo={statusSalvo}/>
+      {tela==="projetos"?(
+        <TelaProjetos idAtual={projeto.id} onAbrir={abrirProjeto} onVoltar={()=>setTela("wizard")}/>
+      ):(
+        <React.Fragment>
+          {step===0&&<StepCategoria projeto={projeto} update={update} next={()=>setStep(1)}/>}
+          {step===1&&<StepTema projeto={projeto} update={update} next={()=>setStep(2)} back={()=>setStep(0)}/>}
+          {step===2&&<StepRoteiro projeto={projeto} update={update} next={()=>setStep(3)} back={()=>setStep(1)}/>}
+          {step===3&&<StepSlides projeto={projeto} update={update} fotos={fotos} setFotos={setFotos} back={()=>setStep(2)}/>}
+        </React.Fragment>
+      )}
     </div>
   );
 }
