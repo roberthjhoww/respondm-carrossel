@@ -209,6 +209,51 @@ const SCHEMA_ROTEIRO={
   required:["slides","cta"],additionalProperties:false,
 };
 
+/* Legenda do post: regras de SEO e algoritmo do Instagram (destilado da skill seo-instagram) */
+const PROMPT_LEGENDA=`Você escreve a legenda do post do Instagram da ResponDM (@respon_dm) para um carrossel que JÁ ESTÁ PRONTO.
+
+A legenda tem dois trabalhos ao mesmo tempo: fazer o Instagram entregar o post (algoritmo) e fazer o post ser encontrado por quem pesquisa o assunto (busca do app e Google).
+
+HIERARQUIA DE SINAIS, otimize nesta ordem:
+1. Envio por DM é o sinal nº 1 de alcance novo. A legenda precisa dar vontade de mandar pra alguém específico.
+2. Salvamento vale mais que curtida. Conteúdo de referência é o que gera save.
+3. Comentário com a palavra-chave é o engajamento E dispara a automação da ResponDM.
+4. As PALAVRAS da legenda são o motor de SEO. Hashtag hoje é só classificação, não traz seguidor.
+
+PRIMEIRA LINHA (hook):
+- Só aparecem cerca de 125 caracteres antes do "...mais". Essa frase precisa ganhar o toque sozinha.
+- A palavra-âncora de busca (o termo que o público realmente digitaria sobre esse assunto) aparece nela de forma natural, nunca empilhada.
+- Fórmulas que funcionam: quebra de crença, erro ou custo escondido, número e prova, curiosidade com loop aberto, promessa específica com prazo.
+
+ESTRUTURA DA LEGENDA: gancho, fricção (uma tensão curta logo depois do gancho), conteúdo progressivo, recompensa, CTA.
+- Parágrafos curtos com quebra de linha. Bloco denso derruba a leitura no celular.
+- Emoji no começo de parágrafo e antes do CTA, com função, nunca decoração.
+- Tamanho: 800 a 1.500 caracteres, porque a legenda agrega o contexto que não coube na arte.
+- A legenda ESPELHA a promessa do carrossel. Nunca cria promessa nova e nunca repete os slides palavra por palavra: ela adiciona o que ficou de fora.
+
+CTA: UM só, no fim, pedindo pra comentar a palavra-chave EXATA que já está no último slide do carrossel.
+
+HASHTAGS: exatamente 5, de nicho (nem genéricas gigantes, nem inventadas), escritas no FIM DA PRÓPRIA LEGENDA.
+
+PROIBIDO:
+- travessão (o caractere —) em qualquer lugar do texto
+- mais de um CTA
+- "espero que tenham gostado", "não perca tempo", "arrasta pro lado" como CTA principal
+- empilhar palavra-chave de forma artificial
+
+A marca é sempre "a ResponDM" (feminino).`;
+
+const SCHEMA_LEGENDA={
+  type:"object",
+  properties:{
+    legenda:{type:"string",description:"A legenda COMPLETA e pronta pra colar no Instagram: hook na primeira linha, corpo com quebras de linha, CTA com a palavra-chave exata e as 5 hashtags no fim. Autossuficiente, sem placeholder."},
+    hooks_alternativos:{type:"array",description:"Exatamente 2 primeiras linhas alternativas pra testar, cada uma com até 125 caracteres e um gatilho diferente do usado na legenda",items:{type:"string"}},
+    alt_text:{type:"string",description:"1 frase descrevendo a imagem do primeiro slide, com a palavra-âncora natural, para o campo Texto alternativo"},
+    palavra_ancora:{type:"string",description:"O termo de busca escolhido como âncora de SEO"},
+  },
+  required:["legenda","hooks_alternativos","alt_text","palavra_ancora"],additionalProperties:false,
+};
+
 /* ─────────────────────────────────────────────
    Chamada à IA via Worker
    ───────────────────────────────────────────── */
@@ -1074,6 +1119,8 @@ function StepSlides({projeto,update,fotos,setFotos,back}){
   const [renderizando,setRenderizando]=useState(false);
   const [escopo,setEscopo]=useState("slide"); // "slide" | "global"
   const [feed,setFeed]=useState(false);
+  const [busyLegenda,setBusyLegenda]=useState(false);
+  const [copiado,setCopiado]=useState("");
 
   const specs=montarSlides(projeto);
   const cat=CATEGORIAS.find(c=>c.id===projeto.categoria)||CATEGORIAS[3];
@@ -1172,6 +1219,40 @@ function StepSlides({projeto,update,fotos,setFotos,back}){
   function resetarEstilo(){
     if(escopo==="global")update({estilo:{fonteTitulo:"Anton",tamanhos:{},cores:{}}});
     else{const novo={...(projeto.ajustes||{})};delete novo[specs[sel].key];update({ajustes:novo});}
+  }
+  async function gerarLegenda(){
+    setBusyLegenda(true);setErr("");
+    try{
+      const roteiro=specs.map((sp,i)=>{
+        if(sp.tipo==="capa") return "SLIDE 1 (capa): "+sp.headline+" | "+sp.sub;
+        if(sp.tipo==="cta") return "SLIDE "+(i+1)+" (CTA): "+sp.titulo+" | "+sp.texto+" | palavra-chave: "+sp.keyword;
+        return "SLIDE "+(i+1)+": ["+(sp.etiqueta||"")+"] "+sp.titulo+" | "+sp.texto;
+      }).join(`
+`);
+      const out=await chamarIA({
+        system:PROMPT_LEGENDA,
+        userText:contextoDoProjeto(projeto)
+          +`
+
+CARROSSEL PRONTO (é este post que a legenda acompanha):
+`+roteiro
+          +`
+
+TAREFA: escreva a legenda completa deste post. A palavra-chave do CTA é `
+          +String((projeto.cta||{}).palavra_chave||"").toUpperCase()
+          +" e ela precisa aparecer escrita exatamente assim na legenda. Antes de devolver, confira: a primeira linha tem menos de 125 caracteres e contém a palavra-âncora? Existe UM CTA só? São exatamente 5 hashtags, no fim da legenda? Não sobrou nenhum travessão?",
+        schema:SCHEMA_LEGENDA,
+        maxTokens:8000,
+      });
+      update({legenda:out});
+    }catch(e){setErr(String(e.message||e));}
+    setBusyLegenda(false);
+  }
+  function copiar(txt,qual){
+    if(!navigator.clipboard){setErr("Seu navegador não deixou copiar. Selecione o texto e use Ctrl+C.");return;}
+    navigator.clipboard.writeText(txt).then(()=>{
+      setCopiado(qual);setTimeout(()=>setCopiado(""),1800);
+    }).catch(()=>setErr("Não consegui copiar. Selecione o texto e use Ctrl+C."));
   }
   function baixarSlide(i){
     const a=document.createElement("a");
@@ -1289,6 +1370,60 @@ function StepSlides({projeto,update,fotos,setFotos,back}){
         );
       })()}
 
+      {/* ── Legenda do post ── */}
+      <Card style={{marginBottom:22,borderLeft:"5px solid var(--yellow)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,marginBottom:projeto.legenda?14:0}}>
+          <div>
+            <div style={{fontWeight:800,fontSize:15}}>Legenda do post</div>
+            <div style={{fontSize:12,color:"var(--text3)",marginTop:2}}>Escrita a partir do carrossel, otimizada pra busca e pro algoritmo.</div>
+          </div>
+          <Btn variant={projeto.legenda?"secondary":"primary"} onClick={gerarLegenda} disabled={busyLegenda}>
+            {busyLegenda?<span><span className="spinner"/>Escrevendo...</span>:(projeto.legenda?"↻ Gerar outra":"✍️ Gerar legenda")}
+          </Btn>
+        </div>
+
+        {projeto.legenda&&(
+          <div>
+            <Field label="Legenda completa (já com hook, CTA e hashtags, pronta pra colar)">
+              <textarea rows={16} style={{...inputStyle,resize:"vertical",lineHeight:1.6}} value={projeto.legenda.legenda}
+                onChange={e=>update({legenda:{...projeto.legenda,legenda:e.target.value}})}/>
+            </Field>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center",marginBottom:18}}>
+              <Btn onClick={()=>copiar(projeto.legenda.legenda,"legenda")}>
+                {copiado==="legenda"?"✓ Copiado":"📋 Copiar legenda"}
+              </Btn>
+              <span style={{fontSize:12,color:"var(--text3)"}}>{projeto.legenda.legenda.length} caracteres</span>
+            </div>
+
+            <Field label="Texto alternativo do primeiro slide (Configurações avançadas, antes de publicar)">
+              <textarea rows={2} style={{...inputStyle,resize:"vertical"}} value={projeto.legenda.alt_text}
+                onChange={e=>update({legenda:{...projeto.legenda,alt_text:e.target.value}})}/>
+            </Field>
+            <Btn variant="secondary" onClick={()=>copiar(projeto.legenda.alt_text,"alt")} style={{marginBottom:18}}>
+              {copiado==="alt"?"✓ Copiado":"📋 Copiar alt text"}
+            </Btn>
+
+            <div style={{background:"var(--surface2)",borderRadius:12,padding:"12px 16px"}}>
+              <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:.5,color:"var(--text2)",marginBottom:8}}>
+                Palavra-âncora de busca: <span style={{color:"var(--purple)"}}>{projeto.legenda.palavra_ancora}</span>
+              </div>
+              <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:.5,color:"var(--text2)",marginBottom:6}}>Outras primeiras linhas pra testar</div>
+              {(projeto.legenda.hooks_alternativos||[]).map((h,i)=>(
+                <div key={i} style={{fontSize:13,color:"var(--text2)",padding:"5px 0",display:"flex",gap:8}}>
+                  <span style={{color:"var(--text3)",fontWeight:700}}>{i+1}.</span><span>{h}</span>
+                </div>
+              ))}
+            </div>
+
+            {(projeto.cta||{}).palavra_chave&&(
+              <div style={{fontSize:12,color:"var(--text2)",marginTop:14,background:"var(--purple-light)",borderRadius:10,padding:"10px 14px"}}>
+                Antes de publicar, deixe a automação da palavra <b>{projeto.cta.palavra_chave}</b> criada na ResponDM. Dá pra usar o "Aguardar próximo post" e ela se vincula sozinha quando o post entrar no ar.
+              </div>
+            )}
+          </div>
+        )}
+      </Card>
+
       {feed&&<FeedModal thumbs={thumbs} headline={(projeto.capas[projeto.capaIdx]||{}).headline||""} onClose={()=>setFeed(false)}/>}
 
       <Btn variant="secondary" onClick={back}>← Voltar ao roteiro</Btn>
@@ -1399,7 +1534,7 @@ function TelaProjetos({onAbrir,onVoltar,idAtual}){
    App
    ───────────────────────────────────────────── */
 
-const PROJETO_VAZIO={id:null,categoria:null,tema:"",link:"",textoPronto:"",qtdSlides:8,capas:[],capaIdx:null,slides:[],cta:null,estilo:{fonteTitulo:"Anton",tamanhos:{},cores:{}},ajustes:{}};
+const PROJETO_VAZIO={id:null,categoria:null,tema:"",link:"",textoPronto:"",qtdSlides:8,capas:[],capaIdx:null,slides:[],cta:null,estilo:{fonteTitulo:"Anton",tamanhos:{},cores:{}},ajustes:{},legenda:null};
 
 function App(){
   const [authReady,setAuthReady]=useState(false);
