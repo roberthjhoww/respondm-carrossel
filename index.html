@@ -1009,7 +1009,9 @@ function desenharSlide(ctx,sp,opts){
   // Com imagem fixa o texto sobe pro topo; sem imagem, centraliza na vertical
   let y=fotoFixa?190:200+Math.max(0,(960-alturaBloco())*0.35);
   if(etiq){
-    const c=corEtiqueta(etiq,accent);
+    const c=cores.etiqueta
+      ? {bg:cores.etiqueta,fg:corClara(cores.etiqueta)?DARK:"#FFFFFF"}
+      : corEtiqueta(etiq,accent);
     pill(ctx,mx,y,etiq.toUpperCase(),c.bg,c.fg,etiqPx,false);
     y+=etiqH;
   }else y+=30;
@@ -1059,9 +1061,10 @@ const COMPONENTES={
   interno:[["etiqueta","Etiqueta"],["titulo","Título"],["texto","Texto"]],
   cta:[["titulo","Título"],["texto","Texto"],["keyword","Palavra-chave"]],
 };
-function coresPadrao(tipo,accent){
+function coresPadrao(tipo,accent,etiqueta){
   const dark=tipo!=="interno";
-  return {fundo:dark?DARK:"#FFFFFF",titulo:dark?"#FFFFFF":"#1A1630",texto:dark?"#C4B0F5":"#4A4A4A",acento:accent.bg};
+  return {fundo:dark?DARK:"#FFFFFF",titulo:dark?"#FFFFFF":"#1A1630",texto:dark?"#C4B0F5":"#4A4A4A",acento:accent.bg,
+    etiqueta:corEtiqueta(etiqueta||"",accent).bg};
 }
 function Seg({value,options,onChange}){
   return(
@@ -1297,7 +1300,7 @@ TAREFA: escreva a legenda completa deste post. A palavra-chave do CTA é `
         const tipo=specs[sel].tipo;
         const f=fotos[specs[sel].key];
         const est=resolverEstilo(projeto,specs[sel].key);
-        const cores={...coresPadrao(tipo,cat.accent),...(est.cores||{})};
+        const cores={...coresPadrao(tipo,cat.accent,specs[sel].etiqueta),...(est.cores||{})};
         const secao={fontSize:12,fontWeight:800,textTransform:"uppercase",letterSpacing:.5,color:"var(--purple)",margin:"18px 0 10px"};
         return(
         <Card style={{marginBottom:22,borderLeft:"5px solid var(--purple)"}}>
@@ -1355,7 +1358,7 @@ TAREFA: escreva a legenda completa deste post. A palavra-chave do CTA é `
 
           <div style={secao}>Cores</div>
           <div style={{display:"flex",gap:18,flexWrap:"wrap",alignItems:"flex-end"}}>
-            {[["fundo","Fundo"],["titulo","Título"],["texto","Texto de apoio"],["acento","Acento"]].map(([c,label])=>(
+            {[["fundo","Fundo"],["titulo","Título"],["texto","Texto de apoio"],["acento","Acento"]].concat(tipo==="interno"?[["etiqueta","Etiqueta"]]:[]).map(([c,label])=>(
               <label key={c} style={{display:"flex",flexDirection:"column",gap:4,fontSize:12,fontWeight:600,color:"var(--text2)",cursor:"pointer"}}>
                 {label}
                 <input type="color" value={cores[c]} onChange={e=>setAjuste({cores:{[c]:e.target.value}})}
