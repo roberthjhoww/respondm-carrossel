@@ -147,7 +147,7 @@ ESTRUTURA GERAL: slide 1 é a capa (hook de payoff). Slide 2 reduz ceticismo e a
 
 const PROMPT_CATEGORIA={
   noticias:`CATEGORIA: NOTÍCIA/NOVIDADE.
-Tom "acabou de mudar", informação fresca, zero enrolação. Notícia viraliza por SHARE: a capa deve dar vontade de mandar pra alguém que precisa saber disso ("manda pra quem posta todo dia"). Estrutura: capa com o payoff da mudança (o que a pessoa ganha/perde com ela) + urgência com data; slide 2 contextualiza o que mudou e abre o loop; desenvolvimento com o que muda na prática (datas, números, quem é afetado), em escalada; o slide interno final mostra como aproveitar a mudança antes da maioria; CTA final. Etiquetas sugeridas: NOVIDADE, MUDOU, CONTEXTO, IMPACTO, APLIQUE.`,
+Tom "acabou de mudar", informação fresca, zero enrolação. Notícia viraliza por SHARE: a capa deve dar vontade de mandar pra alguém que precisa saber disso ("manda pra quem posta todo dia"). Estrutura: capa com o payoff da mudança (o que a pessoa ganha/perde com ela) + urgência com data; slide 2 contextualiza o que mudou e abre o loop; desenvolvimento com o que muda na prática (datas, números, quem é afetado), em escalada; o slide interno final mostra como aproveitar a mudança antes da maioria; CTA final. Etiquetas sugeridas: MUDOU, CONTEXTO, IMPACTO, NA PRÁTICA, APLIQUE. Nunca use a palavra NOVIDADE como etiqueta: ela já é o chip da categoria.`,
   curiosidades:`CATEGORIA: CURIOSIDADE/DADO CHOCANTE.
 Dado chocante é o formato nº 1 em SHARES: escreva cada dado pra dar vontade de mandar pra um amigo ("olha isso"). Estrutura: capa com o dado mais chocante (número ímpar/quebrado em destaque na headline); slide 2 promete o contexto e abre o loop; desenvolvimento alterna dado (etiqueta DADO) e o que ele significa na prática (etiqueta CONTEXTO), guardando o dado mais absurdo pro fim; fechamento com aplicação prática (etiqueta APLIQUE); CTA final.`,
   tutoriais:`CATEGORIA: TUTORIAL/PASSO A PASSO.
@@ -845,6 +845,7 @@ function topo(ctx,chip,accent,dark){
   ctx.font="600 28px Inter";
   ctx.fillStyle=dark?"rgba(255,255,255,.65)":"#A49EC4";
   ctx.fillText("@respon_dm",80,106);
+  if(!chip)return; // chip da categoria só na capa: repetido nos 8 slides ele não informa nada
   ctx.font="800 24px Inter";
   const tw=ctx.measureText(chip).width,padX=28,h=52,w=tw+padX*2,x=W-80-w;
   ctx.fillStyle=accent.bg;rr(ctx,x,72,w,h,26);ctx.fill();
@@ -873,7 +874,7 @@ function desenharSlide(ctx,sp,opts){
   else gridEscuro(ctx);
 
   if(sp.tipo==="capa"){
-    topo(ctx,chip,accent,!claro);
+    topo(ctx,idx===0?chip:"",accent,!claro);
     const T=String(sp.headline||"").toUpperCase();
     const marks=marcarDestaque(T,String(sp.destaque||"").toUpperCase());
     const subPx=Math.round(38*mult(est,"subtitulo")),subLH=Math.round(subPx*1.47);
@@ -906,7 +907,7 @@ function desenharSlide(ctx,sp,opts){
   }
 
   if(sp.tipo==="cta"){
-    topo(ctx,chip,accent,!claro);
+    topo(ctx,idx===0?chip:"",accent,!claro);
     const T=String(sp.titulo||"").toUpperCase();
     const marks=marcarDestaque(T,String(sp.destaque||"").toUpperCase());
     if(!fotoFixa)balaoDigitando(ctx,W/2,240,true);
@@ -929,7 +930,7 @@ function desenharSlide(ctx,sp,opts){
 
   // Slide interno
   ctx.fillStyle=accent.bg;ctx.fillRect(0,0,14,H);
-  topo(ctx,chip,accent,!claro);
+  topo(ctx,idx===0?chip:"",accent,!claro);
 
   const mx=96;
   const etiq=String(sp.etiqueta||"").trim();
@@ -1214,6 +1215,12 @@ function StepSlides({projeto,update,fotos,setFotos,back}){
             </div>
           </div>
 
+          {/* Preview do slide ao lado dos controles: sticky pra acompanhar a rolagem do painel */}
+          <div style={{display:"flex",gap:22,flexWrap:"wrap",marginTop:4}}>
+            <div style={{width:230,flexShrink:0}}>
+              <img src={thumbs[sel]} style={{width:"100%",borderRadius:10,display:"block",position:"sticky",top:16,border:"1px solid var(--border)",boxShadow:"var(--shadow-sm)"}}/>
+            </div>
+            <div style={{flex:1,minWidth:300}}>
           <div style={secao}>Imagem</div>
           {f&&(
             <Field label="Como a imagem entra no slide">
@@ -1261,6 +1268,8 @@ function StepSlides({projeto,update,fotos,setFotos,back}){
               </label>
             ))}
             <Btn variant="ghost" onClick={resetarEstilo}>↺ Resetar {escopo==="global"?"ajustes globais":"ajustes deste slide"}</Btn>
+          </div>
+            </div>
           </div>
         </Card>
         );
@@ -1323,12 +1332,3 @@ function App(){
       {step===0&&<StepCategoria projeto={projeto} update={update} next={()=>setStep(1)}/>}
       {step===1&&<StepTema projeto={projeto} update={update} next={()=>setStep(2)} back={()=>setStep(0)}/>}
       {step===2&&<StepRoteiro projeto={projeto} update={update} next={()=>setStep(3)} back={()=>setStep(1)}/>}
-      {step===3&&<StepSlides projeto={projeto} update={update} fotos={fotos} setFotos={setFotos} back={()=>setStep(2)}/>}
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
-</script>
-</body>
-</html>
