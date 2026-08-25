@@ -78,14 +78,14 @@ const CATEGORIAS=[
 
 // Conteúdo de exemplo do preview de template (3 mini-slides renderizados pelo próprio engine)
 const AMOSTRAS={
-  noticias:{capa:{h:"O Instagram mudou seu alcance e ninguém te avisou",s:"A atualização já está valendo pra contas de todo tamanho.",d:"mudou seu alcance"},meio:{e:"MUDOU",t:"Contas pequenas ganharam prioridade no Reels",x:"O peso de quem tem menos de 10 mil seguidores subiu na recomendação. Janela boa pra postar mais."},cta:{t:"Quer aproveitar antes da maioria?",x:"Comenta ALCANCE que o guia completo chega no seu direct.",k:"ALCANCE"}},
-  curiosidades:{capa:{h:"87% dos seus seguidores nunca veem seus posts",s:"E o motivo não é o horário que você posta.",d:"87%"},meio:{e:"DADO",t:"O feed entrega seu post pra 1 em cada 10",x:"A primeira hora define se o resto vai ver. Salvamentos contam 3x mais que curtidas."},cta:{t:"Quer os dados completos?",x:"Comenta DADOS e recebe o estudo no direct.",k:"DADOS"}},
-  tutoriais:{capa:{h:"DM automática no ar em 7 minutos, sem programar",s:"Mesmo que você nunca tenha usado automação.",d:"7 minutos"},meio:{e:"PASSO 1",t:"Escolha a palavra-chave do comentário",x:"Uma palavra só, fácil de digitar. Ela vira o gatilho que dispara a mensagem no direct."},cta:{t:"Quer o passo a passo completo?",x:"Comenta PASSO e te mando o tutorial no direct.",k:"PASSO"}},
-  erros_mitos:{capa:{h:"O erro que mata seu alcance não é o horário",s:"Você provavelmente comete ele todo dia.",d:"não é o horário"},meio:{e:"MITO",t:"Postar todo dia faz o perfil crescer",x:"Frequência sem retenção derruba a média da conta. O algoritmo mede quem fica, não quem posta."},cta:{t:"Quer parar de sabotar seu perfil?",x:"Comenta ERRO e recebe a lista completa no direct.",k:"ERRO"}},
-  checklist:{capa:{h:"O checklist que eu confiro antes de todo post",s:"7 itens em 2 minutos, antes de apertar publicar.",d:"checklist"},meio:{e:"ITEM 3",t:"Palavra-chave escrita na capa",x:"O Instagram lê o texto da imagem. Sem a palavra que o público busca, o post não aparece na pesquisa."},cta:{t:"Quer o checklist completo pra salvar?",x:"Comenta CHECK que ele chega no seu direct.",k:"CHECK"}},
-  antes_depois:{capa:{h:"De 212 pra 4.700 visitas com uma mudança",s:"Mesmo perfil, mesmo nicho, 30 dias de diferença.",d:"4.700"},meio:{e:"ANTES",t:"Post bonito, legenda longa, zero direção",x:"Média de 212 contas alcançadas. Ninguém salvava, ninguém mandava pra ninguém."},cta:{t:"Quer replicar essa virada?",x:"Comenta COMO e te mando o passo a passo no direct.",k:"COMO"}},
-  opiniao:{capa:{h:"Postar todo dia está afundando seu perfil",s:"Opinião impopular, com dados pra sustentar.",d:"afundando"},meio:{e:"OPINIÃO",t:"Frequência não é estratégia",x:"3 posts fortes por semana batem 7 medianos. A retenção média da conta vale mais que o volume."},cta:{t:"Discorda? Me conta nos comentários",x:"E comenta VERDADE pra receber os dados no direct.",k:"VERDADE"}},
-  demo_produto:{capa:{h:"Comentou, recebeu no direct. Sem você tocar no celular",s:"Foi a automação por comentário que respondeu.",d:"Sem você tocar"},meio:{e:"NA PRÁTICA",t:"A palavra-chave dispara a entrega",x:"Alguém comenta LINK, a ResponDM responde o comentário e manda o material no direct em segundos."},cta:{t:"Quer ver isso rodando no seu perfil?",x:"Comenta DEMO que eu te mostro no direct.",k:"DEMO"}},
+  noticias:{capa:{h:"O Instagram mudou seu alcance e ninguém te avisou",s:"A atualização já está valendo pra contas de todo tamanho.",d:"mudou seu alcance"},meio:{e:"IMPACTO",t:"Seu Reels agora concorre com contas menores",x:"O peso de quem tem menos de 10 mil seguidores subiu na recomendação. Se você continua postando pro mesmo público de sempre, está entregando essa janela pra quem começou ontem."},cta:{t:"Quer aproveitar antes da maioria?",x:"Comenta ALCANCE que o guia completo chega no seu direct.",k:"ALCANCE"}},
+  curiosidades:{capa:{h:"87% dos seus seguidores nunca veem seus posts",s:"E o motivo não é o horário que você posta.",d:"87%"},meio:{e:"DADO",t:"Seus seguidores não são seu alcance",l:"antes_depois",b:[{rotulo:"SEGUIDORES",texto:"8.400 pessoas"},{rotulo:"QUEM VÊ",texto:"1.092 por post"}]},cta:{t:"Quer os dados completos?",x:"Comenta DADOS e recebe o estudo no direct.",k:"DADOS"}},
+  tutoriais:{capa:{h:"DM automática no ar em 7 minutos, sem programar",s:"Mesmo que você nunca tenha usado automação.",d:"7 minutos"},meio:{e:"PASSO 1",t:"Escolha a palavra-chave do comentário",x:"Uma palavra curta, fácil de digitar no celular. Ela vira o gatilho que dispara a DM. Se você escolher uma expressão comprida, metade das pessoas digita errado e não recebe nada.",p:{n:1,de:4}},cta:{t:"Quer o passo a passo completo?",x:"Comenta PASSO e te mando o tutorial no direct.",k:"PASSO"}},
+  erros_mitos:{capa:{h:"O erro que mata seu alcance não é o horário",s:"Você provavelmente comete ele todo dia.",d:"não é o horário"},meio:{e:"ERRO 1",t:"Postar todo dia não é estratégia",l:"mito_verdade",b:[{rotulo:"MITO",texto:"quanto mais você posta, mais o perfil cresce"},{rotulo:"VERDADE",texto:"cada post que ninguém termina de ver ensina o Instagram que seu perfil não segura gente"}]},cta:{t:"Quer parar de sabotar seu perfil?",x:"Comenta ERRO e recebe a lista completa no direct.",k:"ERRO"}},
+  checklist:{capa:{h:"O checklist que eu confiro antes de todo post",s:"7 itens em 2 minutos, antes de apertar publicar.",d:"checklist"},meio:{e:"CHECKLIST",t:"Confira antes de apertar publicar",l:"checklist",b:[{rotulo:"",texto:"Palavra de busca escrita na capa"},{rotulo:"",texto:"Primeira linha da legenda sob 125 caracteres"},{rotulo:"",texto:"Palavra-chave do comentário definida"},{rotulo:"",texto:"Automação criada antes de publicar"}]},cta:{t:"Quer o checklist completo pra salvar?",x:"Comenta CHECK que ele chega no seu direct.",k:"CHECK"}},
+  antes_depois:{capa:{h:"De 212 pra 4.700 visitas com uma mudança",s:"Mesmo perfil, mesmo nicho, 30 dias de diferença.",d:"4.700"},meio:{e:"A VIRADA",t:"Mesmo perfil, mesmo nicho, 30 dias",l:"antes_depois",b:[{rotulo:"ANTES",texto:"212 contas por post"},{rotulo:"DEPOIS",texto:"4.700 contas por post"}]},cta:{t:"Quer replicar essa virada?",x:"Comenta COMO e te mando o passo a passo no direct.",k:"COMO"}},
+  opiniao:{capa:{h:"Postar todo dia está afundando seu perfil",s:"Opinião impopular, com dados pra sustentar.",d:"afundando"},meio:{e:"OPINIÃO",t:"Sua constância está te punindo",x:"Três posts fortes por semana batem sete medianos. Cada post que a pessoa pula derruba a média da sua conta, e é essa média que decide quantos vão ver o próximo."},cta:{t:"Discorda? Me conta nos comentários",x:"E comenta VERDADE pra receber os dados no direct.",k:"VERDADE"}},
+  demo_produto:{capa:{h:"Comentou, recebeu no direct. Sem você tocar no celular",s:"Foi a automação por comentário que respondeu.",d:"Sem você tocar"},meio:{e:"NA PRÁTICA",t:"Você dormindo, a DM saindo",x:"Alguém comenta LINK às três da manhã. A ResponDM responde o comentário e manda o material no direct em segundos. Você acorda com o lead atendido, não com trinta DMs na fila."},cta:{t:"Quer ver isso rodando no seu perfil?",x:"Comenta DEMO que eu te mostro no direct.",k:"DEMO"}},
 };
 
 /* ─────────────────────────────────────────────
@@ -98,13 +98,16 @@ A ResponDM é um SaaS brasileiro de automação de interações no Instagram pel
 
 PÚBLICO: criadores de conteúdo, infoprodutores, agências e negócios locais brasileiros que querem crescer no Instagram sem contratar equipe.
 
-TOM: criador experiente que vive isso todos os dias, não empresa se vendendo. Português brasileiro coloquial mas inteligente. Frases curtas. Conversa, não palestra. Autoridade sem arrogância.
+TOM: criador experiente que vive isso todos os dias, não empresa se vendendo. Português brasileiro coloquial mas inteligente. Frases curtas. Conversa, não palestra. Autoridade sem arrogância. Você fala COM a pessoa, nunca SOBRE o mercado.
 
 PARA QUE ALGORITMO VOCÊ ESCREVE (julho/2026):
 - O sinal nº 1 do Instagram é a pessoa ENVIAR o post por DM pra um amigo. Todo carrossel precisa passar no teste do DM: "alguém mandaria isso pra alguém específico?". Se não, refaça.
 - O 2º sinal é salvar o post. Conteúdo de referência (checklist, resumo, framework) é o que mais gera save.
 - Carrossel ranqueia por taxa de conclusão: cada slide precisa segurar a pessoa até o último.
 
+FONTE DO CONTEÚDO:
+Quando vier um TEXTO BASE ou um LINK, ele MANDA no conteúdo. As regras deste sistema mandam só na FORMA. Cada slide interno precisa ser rastreável a um trecho do material enviado: se você não consegue apontar de onde saiu a afirmação, ela não entra no carrossel. Briefing e roteiro contam como texto base: use os ângulos, os números e os exemplos que estão lá em vez de inventar equivalentes plausíveis.
+Sem texto base e sem link, prefira mecanismo e situação concreta a estatística. Número que você não pode sustentar é pior que número nenhum.
 REGRAS DA CAPA (slide 1):
 - A capa anuncia o PAYOFF (o que a pessoa ganha, perde ou descobre), NUNCA o assunto. Errado: "Algoritmo do Instagram em 2026". Certo: "Seu alcance caiu 40% e a causa não é o que você pensa".
 - Headline: 6 a 12 palavras, 1 ideia, 1 gatilho psicológico só (curiosidade, FOMO/erro, ganho, defesa, alívio ou descrença/contrário). Empilhar gatilhos na mesma frase vira ruído.
@@ -112,16 +115,44 @@ REGRAS DA CAPA (slide 1):
 - Números: prefira ímpares e quebrados ("7 erros", "R$ 4.830") a redondos.
 - Subtítulo: 1 frase que neutraliza a objeção principal ("mesmo sem X") ou aumenta a tensão.
 
-REGRAS DE CADA SLIDE INTERNO:
-- 1 ideia por slide, com pelo menos um dado, número, mecanismo ou situação concreta.
-- Título: até 10 palavras, provoca leitura em vez de descrever.
-- Texto de apoio: 1 a 2 frases, 15 a 25 palavras, que adicionam algo novo (nunca continuação óbvia do título). O slide inteiro nunca passa de 40 palavras: a janela de leitura é 1,5 segundo.
-- Etiqueta = mini-headline de sinalização ("ERRO 3", "PASSO 2", "DADO"), nunca enfeite.
-- Cada slide entrega uma micro-revelação completa E abre curiosidade pro próximo. Quando couber, o texto de apoio termina puxando o próximo slide (ex: "e o pior erro é o próximo").
-- ESCALADA: os slides vão do bom pro melhor. O insight mais forte do carrossel fica no FIM do desenvolvimento, nunca no começo.
-- Em carrosséis com 5+ slides internos, o ÚLTIMO slide interno é um resumo salvável (checklist ou recap de tudo), com etiqueta RESUMO.
-- Em carrosséis de 8+ slides no total, um slide do MEIO pode pedir naturalmente pra salvar o post (nunca no final).
-- Quando a ResponDM aparecer como solução, nomeie o mecanismo concreto (ex: "a automação por comentário entrega o PDF no direct"), nunca benefício vago. Ela não precisa aparecer em todo carrossel.
+O QUE FAZ O LEITOR CONTINUAR (a regra que manda em todo slide interno):
+Ninguém arrasta um carrossel pra aprender. A pessoa arrasta porque se reconheceu e agora quer saber o tamanho do estrago. Informação correta sobre um assunto não segura ninguém. O que segura é ela sentir que aquilo está acontecendo com a conta dela agora.
+TESTE DE RELEVÂNCIA: se o leitor consegue ler o slide sem se sentir citado, o slide está fraco. Reescreva até incomodar um pouco.
+TESTE DA NOVIDADE: se dá pra adivinhar o texto de apoio só lendo o título, o slide não existe. O apoio diz o que o título não disse.
+
+VOZ (obrigatória em todos os slides internos):
+- Fale com a pessoa em "você" e "seu perfil", do primeiro ao último slide. O assunto nunca é "o algoritmo": é o que o algoritmo está fazendo com a conta dela.
+- NUNCA escreva em primeira pessoa ("eu testei", "eu vi", "a gente", "nossos clientes"). Nada de relato pessoal e nada de voz de empresa.
+- NUNCA escreva em terceira pessoa institucional ("as contas que postam", "os criadores devem"). É isso que deixa o carrossel com cara de página de produto.
+- Frases curtas, verbo no presente, como quem aponta pra tela dela.
+
+PAPEL DE CADA SLIDE (campo "papel": decida o papel ANTES de escrever o texto):
+- CONFRONTO: derruba de frente uma prática que o leitor faz e defende. Tensão alta, sem meio-termo.
+- CUSTO: nomeia o que essa prática está tirando dele AGORA. Tempo, seguidor que não volta, DM parada, venda que foi pro concorrente. O custo é sempre da conta dele, nunca do mercado.
+- CAUSA: explica o mecanismo por trás, por que aquilo acontece. É aqui que entra o funcionamento do sistema.
+- PROVA: uma cena concreta e verificável. Dois números lado a lado, um perfil descrito sem nome, um teste com resultado. Escrita em "você", nunca em "eu".
+- VIRADA: o que fazer no lugar. Ação executável, não conselho.
+- PASSO ou ITEM: uma ação executável ou um item verificável por slide (tutoriais e checklists).
+- RESUMO: recap salvável de tudo que foi entregue.
+Dois slides seguidos nunca repetem o mesmo papel dizendo a mesma coisa com outras palavras.
+
+FORMA DE CADA SLIDE INTERNO:
+- 1 ideia por slide, em escalada: o insight mais forte fica no FIM do desenvolvimento, nunca no começo.
+- Etiqueta: mini-headline de sinalização em maiúsculas ("ERRO 2", "PASSO 1", "CUSTO"), nunca enfeite.
+- Título: até 10 palavras, falando do leitor. "Você posta todo dia e o alcance só cai" é título. "Frequência não garante crescimento" é legenda de gráfico.
+- Texto de apoio: 30 a 45 palavras, em três batidas: o que está acontecendo, por que acontece, o que isso custa (ou o que fazer). Abaixo de 30 palavras o slide morre antes de o leitor sentir o problema. Acima de 50 vira parede.
+- LOOP: cada slide entrega uma revelação completa E deixa uma ponta solta. A ponta é informação incompleta, nunca instrução de navegação. Certo: "e existe um horário em que isso conta o dobro". Errado: "veja no próximo slide".
+- Em carrosséis com 5 ou mais slides internos, o ÚLTIMO interno é um resumo salvável, com etiqueta RESUMO.
+- Em carrosséis de 8 ou mais slides no total, um slide do MEIO pode pedir o save naturalmente (nunca no final).
+- Quando a ResponDM aparecer, nomeie o mecanismo concreto ("a automação por comentário entrega o PDF no direct"), nunca benefício vago. Ela não precisa aparecer em todo carrossel.
+
+LAYOUT DO SLIDE (campo "layout": muda o desenho da arte, não só o texto):
+- "texto" é o padrão: título mais texto de apoio.
+- "checklist": vira lista com caixinha marcada. Use no slide RESUMO de checklists e tutoriais, e sempre que o slide for uma verificação. blocos = 3 a 5 itens, rotulo vazio, até 12 palavras por item.
+- "mito_verdade": dois blocos opostos no MESMO slide, o falso em vermelho e o certo em destaque. Em vez de gastar dois slides, o par inteiro cabe em um. blocos = exatamente 2, rotulos MITO e VERDADE (ou ERRO e CERTO), até 25 palavras cada.
+- "antes_depois": duas colunas com uma seta no meio, pra comparar dois números. blocos = exatamente 2, rotulos ANTES e DEPOIS, cada texto começando pelo número ("212 contas por post"), até 8 palavras.
+- Quando o layout não for "texto", o campo "texto" vem VAZIO: os blocos SÃO o corpo do slide, e o título é a provocação.
+- Não force layout: um carrossel com tudo em checklist cansa igual a um com tudo em texto. Use o layout quando ele mostra algo que o parágrafo não mostra.
 
 CTA FINAL:
 - UM pedido só: comentar UMA palavra-chave em maiúsculas pra receber algo no direct (o post vira demonstração da própria ResponDM).
@@ -133,6 +164,9 @@ PROIBIDO (nunca use):
 - benefício sem mecanismo que o explique
 - headline que anuncia o assunto em vez do payoff
 - conclusão óbvia embalada como insight
+- slide interno escrito sobre o assunto em vez de escrito para a pessoa ("as contas que postam muito", "os criadores precisam entender")
+- ponta solta de navegação ("veja no próximo slide", "arrasta pra ver"). A ponta solta é sempre informação incompleta, nunca instrução
+- dado de mercado sem consequência para o leitor na mesma frase
 
 DESTAQUE DE TÍTULO (campo "destaque"):
 - Em cada título ou headline, quando fizer sentido, escolha UM trecho de 1 a 3 palavras CONSECUTIVAS (copiado exatamente como aparece no título) que carrega o payoff: o número, a palavra de tensão ou o vencedor da frase. Esse trecho ganha cor de destaque no design.
@@ -165,25 +199,53 @@ PROIBIDO PEDIR (produz clip-art de banco de imagem): "3D bar chart", "infographi
 
 REGRA QUE MANDA EM TODAS: a imagem mostra o ASSUNTO do slide, na tela onde aquilo acontece de verdade. Se o slide fala de uma função nova, a imagem é aquela função na interface, nunca uma cena decorativa.
 
-ESTRUTURA GERAL: slide 1 é a capa (hook de payoff). Slide 2 reduz ceticismo e abre o loop ("nos próximos X slides você vai ver..."). Desenvolvimento em escalada. Resumo salvável quando houver 5+ slides internos. Último slide é o CTA com loop-back.`;
+ESTRUTURA GERAL: slide 1 é a capa (hook de payoff). Slide 2 é CONFRONTO: derruba de frente o jeito que o leitor faz hoje e abre o loop. Desenvolvimento em escalada de CUSTO e CAUSA, do menor pro maior estrago. PROVA antes do fim. VIRADA com o que fazer no lugar. Resumo salvável quando houver 5 ou mais slides internos. Último slide é o CTA com loop-back.
+
+CHECAGEM FINAL, obrigatória antes de devolver. Passe slide por slide:
+1. O leitor consegue ler esse slide sem se sentir citado? Então está fraco. Reescreva.
+2. Dá pra adivinhar o texto de apoio só lendo o título? Então o slide não existe. Reescreva.
+3. Tem "eu", "a gente" ou terceira pessoa institucional? Troque por "você".
+4. O texto de apoio tem menos de 30 palavras? Está raso. Falta a batida do custo ou do porquê.
+5. Dois slides seguidos dizem a mesma coisa com outras palavras? Corte um e aprofunde o outro.`;
 
 const PROMPT_CATEGORIA={
   noticias:`CATEGORIA: NOTÍCIA/NOVIDADE.
-Tom "acabou de mudar", informação fresca, zero enrolação. Notícia viraliza por SHARE: a capa deve dar vontade de mandar pra alguém que precisa saber disso ("manda pra quem posta todo dia"). Estrutura: capa com o payoff da mudança (o que a pessoa ganha/perde com ela) + urgência com data; slide 2 contextualiza o que mudou e abre o loop; desenvolvimento com o que muda na prática (datas, números, quem é afetado), em escalada; o slide interno final mostra como aproveitar a mudança antes da maioria; CTA final. Etiquetas sugeridas: MUDOU, CONTEXTO, IMPACTO, NA PRÁTICA, APLIQUE. Nunca use a palavra NOVIDADE como etiqueta: ela já é o chip da categoria.`,
+Tom "acabou de mudar", informação fresca, zero enrolação. Notícia viraliza por SHARE.
+O erro clássico aqui é narrar a mudança de fora ("o Instagram anunciou que"). Narre de dentro do perfil do leitor: o que a mudança já está fazendo com a conta DELE hoje.
+ARCO: slide 2 CONFRONTO (o que a mudança derruba no jeito que ele faz hoje); meio em CUSTO e CAUSA (o que ele perde se continuar igual, e por que a mudança causa isso), em escalada; PROVA com datas e números da mudança; VIRADA com como aproveitar antes da maioria; RESUMO quando houver 5 ou mais internos.
+Etiquetas sugeridas: MUDOU, CONTEXTO, IMPACTO, CUSTO, NA PRÁTICA, APLIQUE, RESUMO. Nunca use NOVIDADE como etiqueta: ela já é o chip da categoria.
+LAYOUT: "antes_depois" no slide que compara como era e como ficou. RESUMO em "checklist".`,
   curiosidades:`CATEGORIA: CURIOSIDADE/DADO CHOCANTE.
-Dado chocante é o formato nº 1 em SHARES: escreva cada dado pra dar vontade de mandar pra um amigo ("olha isso"). Estrutura: capa com o dado mais chocante (número ímpar/quebrado em destaque na headline); slide 2 promete o contexto e abre o loop; desenvolvimento alterna dado (etiqueta DADO) e o que ele significa na prática (etiqueta CONTEXTO), guardando o dado mais absurdo pro fim; fechamento com aplicação prática (etiqueta APLIQUE); CTA final.`,
+Dado chocante é o formato nº 1 em SHARES, mas dado solto não segura ninguém: todo número vira consequência para o leitor na mesma frase.
+"87% dos posts não são vistos" é dado. "87% dos seus seguidores não viram seu último post, e é por isso que o próximo já nasce menor" é slide.
+ARCO: slide 2 CONFRONTO com o dado que contraria o que ele acredita; meio alternando CAUSA (por que o número é esse) e CUSTO (o que esse número tira dele), guardando o dado mais absurdo pro fim; PROVA com dois números lado a lado; VIRADA com o que fazer com essa informação; RESUMO quando houver 5 ou mais internos.
+Etiquetas sugeridas: DADO, CONTEXTO, CUSTO, PROVA, APLIQUE, RESUMO.
+LAYOUT: "antes_depois" quando houver dois números pra comparar. RESUMO em "checklist".`,
   tutoriais:`CATEGORIA: TUTORIAL/PASSO A PASSO.
-Tutorial é o formato nº 1 em SAVES: o carrossel inteiro deve valer como material de consulta. Estrutura: capa com a promessa específica do resultado + prazo ou esforço ("em 10 minutos", "sem ferramenta paga"); slide 2 diz o que a pessoa vai conseguir fazer e abre o loop; desenvolvimento em passos numerados (etiquetas "PASSO 1", "PASSO 2"...), cada passo com UMA ação concreta executável e um detalhe que só quem faz sabe; último slide interno é o resumo salvável de todos os passos (etiqueta RESUMO); CTA final.`,
+Tutorial é o formato nº 1 em SAVES. Passo alto demais ("configure a automação") mata o carrossel: cada passo nomeia o clique real, o campo real, a tela real, mais o detalhe que só quem faz sabe.
+ARCO: slide 2 CUSTO (quanto tempo ele perde fazendo isso na mão hoje, com número); depois UM passo por slide, etiquetas PASSO 1, PASSO 2 e assim por diante em sequência (a arte transforma a numeração em barra de progresso, então nunca pule número); último slide interno é o RESUMO de todos os passos.
+LAYOUT: o RESUMO sai obrigatoriamente em "checklist", um passo por item.`,
   erros_mitos:`CATEGORIA: ERROS/MITOS/BASTIDORES.
-Fórmula PAS (dor, agitação, solução). Take contrário gera SHARE e comentário: a capa deve desafiar uma crença que o público defende. Estrutura: capa provoca com o erro ou mito mais comum; slide 2 reduz ceticismo e abre o loop; desenvolvimento em pares: um slide com o mito/erro (etiqueta MITO ou ERRO) seguido da verdade/correção com o mecanismo por trás (etiqueta VERDADE ou CERTO), do erro mais comum ao mais caro; fechamento com a virada de perspectiva; CTA final.`,
+Take contrário gera SHARE e comentário. A capa desafia uma crença que o público defende.
+ARCO: slide 2 CONFRONTO; o desenvolvimento vai do erro mais comum ao mais caro, com o CUSTO sempre nomeado; PROVA antes do fim; VIRADA com o que fazer no lugar; RESUMO quando houver 5 ou mais internos.
+LAYOUT: use "mito_verdade" na maioria dos slides de desenvolvimento. Em vez de gastar dois slides (um pro mito, outro pra verdade), o par inteiro cabe em um: bloco 1 com rotulo MITO ou ERRO, bloco 2 com rotulo VERDADE ou CERTO trazendo o mecanismo. Nesses slides o campo texto vem VAZIO e o título é a provocação.
+Etiquetas sugeridas: ERRO 1, ERRO 2, CUSTO, PROVA, VIRADA, RESUMO.`,
   checklist:`CATEGORIA: CHECKLIST SALVÁVEL.
-Checklist é o formato nº 1 em SAVES: o carrossel inteiro vale como material de consulta que a pessoa volta a abrir. Estrutura: capa promete a lista completa com o resultado específico que ela garante; slide 2 diz o que a lista cobre e abre o loop; desenvolvimento com UM item verificável por slide (etiquetas ITEM 1, ITEM 2...), cada item com a ação concreta e o detalhe que a maioria esquece; o último slide interno é o checklist inteiro condensado pra salvar (etiqueta CHECKLIST); um slide do meio pede naturalmente o save; CTA final.`,
+Formato nº 1 em SAVES: o carrossel inteiro vale como material que a pessoa volta a abrir.
+ARCO: slide 2 CUSTO (o que acontece quando ele publica sem conferir); depois UM item verificável por slide, etiquetas ITEM 1, ITEM 2 em sequência, cada um com a ação concreta e o detalhe que a maioria esquece; um slide do meio pede o save naturalmente; o último interno é a lista inteira.
+LAYOUT: o último slide interno é OBRIGATORIAMENTE "checklist", com 4 a 5 itens condensados (um por bloco, rotulo vazio) e etiqueta CHECKLIST. Um slide de item individual pode usar "checklist" quando o item tiver sub-verificações.`,
   antes_depois:`CATEGORIA: ANTES/DEPOIS COM MÉTRICA.
-Transformação com número específico é prova, e prova gera share e save. Números reais, ímpares e quebrados (212, 4.700), nunca redondos demais. Estrutura: capa anuncia a transformação em números (de X pra Y) sem revelar o método; slide 2 pinta o cenário do ANTES com a métrica de partida (etiqueta ANTES); desenvolvimento mostra cada mudança que causou a virada (etiquetas MUDANÇA 1, MUDANÇA 2...), com o efeito medido de cada uma, em escalada; o slide interno final consolida o DEPOIS com os números lado a lado (etiqueta DEPOIS); CTA final promete o método completo no direct.`,
+Transformação com número específico é prova. Números ímpares e quebrados (212, 4.700), nunca redondos demais.
+ARCO: slide 2 mostra o ANTES com a métrica de partida e o CUSTO daquilo; desenvolvimento com cada mudança que causou a virada (etiquetas MUDANÇA 1, MUDANÇA 2), sempre com o efeito medido; PROVA consolidando os números; VIRADA com o que ele faz primeiro; RESUMO quando houver 5 ou mais internos.
+LAYOUT: "antes_depois" no slide 2 e no slide de consolidação, bloco 1 com rotulo ANTES e bloco 2 com rotulo DEPOIS, cada texto começando pelo número. RESUMO em "checklist".`,
   opiniao:`CATEGORIA: OPINIÃO CONTRÁRIA.
-Take contrário é o formato nº 1 em comentários e gera share por identificação ("eu sempre disse isso") ou revolta. A capa desafia DE FRENTE uma prática que o público defende, com posição clara, sem meio-termo. Estrutura: capa com a tese contrária; slide 2 reconhece por que todo mundo acredita no contrário (reduz defesa); desenvolvimento derruba a crença com dados e mecanismos, do argumento mais fraco pro mais forte (etiquetas OPINIÃO, DADO, PROVA); o slide interno final entrega o que fazer NO LUGAR da prática criticada; CTA final convida a discordar nos comentários E comenta a palavra-chave.`,
+Take contrário é o formato nº 1 em comentários. Posição clara, sem meio-termo, e sempre dirigida ao leitor, nunca ao mercado em geral.
+ARCO: slide 2 CONFRONTO com a tese; o slide seguinte reconhece por que ele acredita no contrário (reduz defesa) e já nomeia o CUSTO de continuar acreditando; desenvolvimento derruba a crença com CAUSA e PROVA, do argumento mais fraco pro mais forte; VIRADA com o que fazer no lugar da prática criticada; RESUMO quando houver 5 ou mais internos.
+LAYOUT: "mito_verdade" quando o slide contrapõe o que dizem e o que acontece de verdade.`,
   demo_produto:`CATEGORIA: DEMONSTRAÇÃO DO PRODUTO.
-O carrossel mostra a ResponDM em ação resolvendo UM problema específico, como bastidor real, nunca como anúncio. A capa vende o RESULTADO da automação (nunca "conheça a ferramenta"). Estrutura: capa com o resultado que a automação entrega; slide 2 mostra a dor de fazer isso manualmente (números de tempo perdido ajudam); desenvolvimento mostra o passo a passo real dentro da ResponDM (etiquetas NA PRÁTICA, PASSO 1...), sempre nomeando o mecanismo concreto (automação por comentário, resposta pública, Flow); o slide interno final mostra o resultado rodando; o CTA é a própria demonstração: comenta a palavra-chave e recebe no direct.`,
+O carrossel mostra a ResponDM resolvendo UM problema específico, como bastidor, nunca como anúncio. A capa vende o RESULTADO, nunca "conheça a ferramenta".
+ARCO: slide 2 CUSTO do jeito manual (tempo perdido, DM sem resposta, lead que esfria), com número; CAUSA de por que isso acontece com todo mundo; depois PASSO 1, PASSO 2 dentro da ResponDM, sempre nomeando o mecanismo concreto (automação por comentário, resposta pública, Flow); PROVA com o resultado rodando; o CTA é a própria demonstração.
+LAYOUT: último interno em "checklist" com o que ficou automatizado. "antes_depois" quando der pra comparar o tempo manual e o automático.`,
 };
 
 const SCHEMA_CAPAS={
@@ -209,13 +271,20 @@ const SCHEMA_ROTEIRO={
     slides:{type:"array",items:{
       type:"object",
       properties:{
-        etiqueta:{type:"string",description:"Mini-headline de sinalização em maiúsculas (ex: MITO, VERDADE, PASSO 1, DADO, RESUMO) ou string vazia"},
-        titulo:{type:"string",description:"Título do slide, até 10 palavras, provoca em vez de descrever"},
-        texto:{type:"string",description:"Texto de apoio, 1 a 2 frases, 15 a 25 palavras; slide inteiro até 40 palavras"},
+        papel:{type:"string",description:"Papel deste slide no arco, decidido ANTES de escrever o texto: CONFRONTO, CUSTO, CAUSA, PROVA, VIRADA, PASSO, ITEM ou RESUMO"},
+        layout:{type:"string",description:"Layout visual do slide: 'texto' (padrão), 'checklist' (itens com caixinha marcada), 'mito_verdade' (dois blocos opostos no mesmo slide) ou 'antes_depois' (duas colunas comparando dois números)"},
+        etiqueta:{type:"string",description:"Mini-headline de sinalização em maiúsculas (ex: ERRO 2, PASSO 1, CUSTO, RESUMO) ou string vazia"},
+        titulo:{type:"string",description:"Título do slide, até 10 palavras, falando com o leitor em 'você' e não sobre o assunto"},
+        texto:{type:"string",description:"Texto de apoio em 'você', 30 a 45 palavras, em três batidas: o que está acontecendo, por que acontece, o que isso custa ou o que fazer. String VAZIA quando layout não for 'texto'"},
+        blocos:{type:"array",description:"Só quando layout não é 'texto' (array vazio caso contrário). checklist: 3 a 5 itens, rotulo vazio, até 12 palavras cada. mito_verdade: exatamente 2, rotulos MITO e VERDADE (ou ERRO e CERTO), até 25 palavras cada. antes_depois: exatamente 2, rotulos ANTES e DEPOIS, texto começando pelo número, até 8 palavras",
+          items:{type:"object",properties:{
+            rotulo:{type:"string",description:"Rótulo curto em maiúsculas, ou string vazia em itens de checklist"},
+            texto:{type:"string",description:"Conteúdo do bloco"},
+          },required:["rotulo","texto"],additionalProperties:false}},
         destaque:{type:"string",description:"Trecho de 1 a 3 palavras consecutivas copiado EXATAMENTE do título que ganha cor de destaque, ou string vazia"},
         prompt_imagem:{type:"string",description:"Prompt de imagem deste slide seguindo as regras de PROMPT DE IMAGEM: um parágrafo em inglês, com os rótulos da tela em português entre aspas, OU o aviso PRINT REAL (tela da ResponDM) OU o aviso SEM IMAGEM (slide melhor só com texto)"},
       },
-      required:["etiqueta","titulo","texto","destaque","prompt_imagem"],additionalProperties:false,
+      required:["papel","layout","etiqueta","titulo","texto","blocos","destaque","prompt_imagem"],additionalProperties:false,
     }},
     cta:{type:"object",
       properties:{
@@ -305,9 +374,20 @@ function contextoDoProjeto(p){
   let s=`CATEGORIA ESCOLHIDA: ${CATEGORIAS.find(c=>c.id===p.categoria)?.nome||p.categoria}`;
   if(p.tema) s+=`\nTEMA DO CARROSSEL: ${p.tema}`;
   if(p.link) s+=`\nLINK DE MATÉRIA (leia a página com web_fetch e use como base factual do conteúdo): ${p.link}`;
-  if(p.textoPronto) s+=`\nTEXTO BASE (adapte ESTE conteúdo para os slides, sem inventar fatos que não estão nele):\n"""\n${p.textoPronto}\n"""`;
+  if(p.textoPronto) s+=`\n\nTEXTO BASE (MANDA no conteúdo dos slides; as regras do sistema mandam só na FORMA). Cada slide interno precisa ser rastreável a um trecho deste material: use os números, os exemplos e os fatos daqui em vez de inventar equivalentes. Se for um briefing, siga os ângulos e os dados que ele traz.\n"""\n${p.textoPronto}\n"""`;
   s+=`\nTOTAL DE SLIDES: ${p.qtdSlides} (slide 1 = capa, ${internos} slides internos, último slide = CTA)`;
   return s;
+}
+
+// Blocos <-> textarea: uma linha por bloco, no formato "RÓTULO: texto".
+// ponytail: rótulo limitado a 18 caracteres pra um dois-pontos no meio da frase não virar rótulo.
+// Se um dia precisar de rótulo longo, vira um campo separado por bloco.
+function blocosParaTexto(bs){return (bs||[]).map(b=>(b.rotulo?b.rotulo+": ":"")+(b.texto||"")).join("\n");}
+function textoParaBlocos(t){
+  return String(t||"").split("\n").map(l=>{
+    const i=l.indexOf(":");
+    return (i>0&&i<=18)?{rotulo:l.slice(0,i).trim(),texto:l.slice(i+1).replace(/^ /,"")}:{rotulo:"",texto:l};
+  });
 }
 
 /* ─────────────────────────────────────────────
@@ -450,7 +530,7 @@ function PreviewCategoria({cat,onConfirm,onClose}){
       const am=AMOSTRAS[cat.id];if(!am)return;
       const specs=[
         {tipo:"capa",headline:am.capa.h,sub:am.capa.s,destaque:am.capa.d},
-        {tipo:"interno",etiqueta:am.meio.e,titulo:am.meio.t,texto:am.meio.x,destaque:""},
+        {tipo:"interno",etiqueta:am.meio.e,titulo:am.meio.t,texto:am.meio.x,destaque:"",layout:am.meio.l||"texto",blocos:am.meio.b||[],passo:am.meio.p||null},
         {tipo:"cta",titulo:am.cta.t,texto:am.cta.x,keyword:am.cta.k,destaque:""},
       ];
       const posicoes=[0,2,6];
@@ -587,8 +667,22 @@ function StepRoteiro({projeto,update,next,back}){
       const out=await chamarIA({
         system:PROMPT_BASE+"\n\n"+PROMPT_CATEGORIA[projeto.categoria],
         userText:contextoDoProjeto(projeto)
-          +`\n\nCAPA JÁ ESCOLHIDA (slide 1, não recrie):\nHeadline: ${capa.headline}\nSubtítulo: ${capa.subtitulo}`
-          +`\n\nTAREFA: escreva os ${internos} slides internos (slide 2 até o slide ${projeto.qtdSlides-1}) alinhados a essa capa, e o slide final de CTA. O slide 2 reduz ceticismo e abre o loop. Desenvolva em ESCALADA: o insight mais forte fica no fim do desenvolvimento. ${internos>=5?"O último slide interno é um resumo salvável (etiqueta RESUMO) de tudo que foi entregue. ":""}Cada slide entrega uma micro-revelação e abre curiosidade pro próximo. O CTA fecha o círculo com a promessa da capa. Antes de devolver, valide cada slide: passa no teste do DM? Tem dado, número ou mecanismo concreto? Está dentro de 40 palavras? Devolva no campo "slides" exatamente ${internos} itens, na ordem.`,
+          +`
+
+CAPA JÁ ESCOLHIDA (slide 1, não recrie):
+Headline: ${capa.headline}
+Subtítulo: ${capa.subtitulo}
+
+TAREFA: escreva os ${internos} slides internos (slide 2 até o slide ${projeto.qtdSlides-1}) alinhados a essa capa, e o slide final de CTA.
+
+PRIMEIRO decida o PAPEL de cada um dos ${internos} slides e monte o arco inteiro, depois escreva: CONFRONTO no slide 2, CUSTO e CAUSA no meio em escalada do menor pro maior estrago, PROVA antes do fim, VIRADA com o que fazer no lugar${internos>=5?", e RESUMO salvável no último slide interno":""}. Dois slides seguidos nunca repetem o mesmo papel dizendo a mesma coisa com outras palavras.
+
+Escreva TUDO em "você" e "seu perfil". Nada de "eu", nada de "a gente", nada de terceira pessoa institucional.
+Texto de apoio: 30 a 45 palavras em três batidas (o que está acontecendo, por que acontece, o que isso custa ou o que fazer).
+${projeto.textoPronto.trim()?"O TEXTO BASE acima MANDA no conteúdo: cada slide interno tem que ser rastreável a um trecho dele. Use os números, os exemplos e os fatos que estão lá em vez de inventar equivalentes. As regras do sistema mandam só na forma.":""}
+Antes de devolver, passe slide por slide nos dois testes: o leitor consegue ler isso sem se sentir citado? Então está fraco, reescreva. Dá pra adivinhar o texto de apoio só lendo o título? Então o slide não existe, reescreva.
+
+Devolva no campo "slides" exatamente ${internos} itens, na ordem.`,
         useWebFetch:!!projeto.link.trim(),
         schema:SCHEMA_ROTEIRO,
         maxTokens:16000,
@@ -674,7 +768,10 @@ function StepRoteiro({projeto,update,next,back}){
 
           {projeto.slides.map((s,i)=>(
             <Card key={i} style={{marginBottom:12}}>
-              <div style={{fontSize:11,fontWeight:800,color:"var(--text3)",marginBottom:10}}>SLIDE {i+2}</div>
+              <div style={{fontSize:11,fontWeight:800,color:"var(--text3)",marginBottom:10}}>
+                SLIDE {i+2}
+                {s.papel?<span style={{marginLeft:8,padding:"2px 8px",borderRadius:999,background:"var(--surface2,#F2EEFF)",color:"var(--purple)"}}>{String(s.papel).toUpperCase()}</span>:null}
+              </div>
               <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
                 <div style={{width:150}}>
                   <Field label="Etiqueta">
@@ -688,9 +785,14 @@ function StepRoteiro({projeto,update,next,back}){
                 </div>
               </div>
               <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-                <div style={{flex:1,minWidth:220}}>
-                  <Field label="Texto de apoio">
-                    <textarea rows={2} style={{...inputStyle,resize:"vertical"}} value={s.texto} onChange={e=>setSlide(i,"texto",e.target.value)}/>
+                <div style={{width:190}}>
+                  <Field label="Layout do slide">
+                    <select style={inputStyle} value={s.layout||"texto"} onChange={e=>setSlide(i,"layout",e.target.value)}>
+                      <option value="texto">Texto corrido</option>
+                      <option value="checklist">Checklist</option>
+                      <option value="mito_verdade">Mito e verdade</option>
+                      <option value="antes_depois">Antes e depois</option>
+                    </select>
                   </Field>
                 </div>
                 <div style={{width:200}}>
@@ -699,6 +801,18 @@ function StepRoteiro({projeto,update,next,back}){
                   </Field>
                 </div>
               </div>
+              {(s.layout||"texto")==="texto"?(
+                <Field label="Texto de apoio (30 a 45 palavras)">
+                  <textarea rows={3} style={{...inputStyle,resize:"vertical"}} value={s.texto} onChange={e=>setSlide(i,"texto",e.target.value)}/>
+                </Field>
+              ):(
+                <Field label={s.layout==="checklist"?"Itens do checklist (um por linha)":"Blocos (um por linha, no formato RÓTULO: texto)"}>
+                  <textarea rows={4} style={{...inputStyle,resize:"vertical"}}
+                    placeholder={s.layout==="checklist"?"Palavra-chave escrita na capa\nPrimeira linha da legenda com o termo de busca":"MITO: postar todo dia faz o perfil crescer\nVERDADE: o que sobe a conta é quanto tempo a pessoa fica"}
+                    value={blocosParaTexto(s.blocos)}
+                    onChange={e=>setSlide(i,"blocos",textoParaBlocos(e.target.value))}/>
+                </Field>
+              )}
             </Card>
           ))}
 
@@ -906,10 +1020,10 @@ function frameFoto(ctx,img,x,y,w,h,inteiro){
 }
 // Espaço mínimo que o print sempre recebe, pra ele nunca sumir calado como acontecia no card 4:3
 const FRAME_MIN=330;
-function frameAuto(ctx,img,yTop,inteiro){
-  const yFim=H-108;
+function frameAuto(ctx,img,yTop,inteiro,minH){
+  const yFim=H-108,min=minH||FRAME_MIN;
   let x=96,w=W-2*96,h=yFim-yTop;
-  if(h<FRAME_MIN){h=FRAME_MIN;yTop=yFim-h;}
+  if(h<min){h=min;yTop=yFim-h;}
   if(inteiro){
     // o frame assume a proporção da imagem, então nada é cortado e não sobra tarja preta:
     // print largo usa a largura toda, print vertical estreita o frame e centraliza
@@ -969,6 +1083,82 @@ function topo(ctx,chip,accent,dark){
   ctx.textBaseline="alphabetic";ctx.textAlign="left";
 }
 
+function alphaHex(c,aa){return /^#[0-9a-fA-F]{6}$/.test(c)?c+aa:c;}
+
+// Corpo dos slides internos quando o layout não é texto corrido.
+// draw=false só mede. Medir e desenhar pelo MESMO caminho, senão as duas contas divergem.
+function blocosBody(ctx,draw,layout,blocos,x,y,larg,corpo,accent,corTexto,claro){
+  const lineH=Math.round(corpo*1.5),rotPx=26;
+  const cinza=claro?"rgba(26,22,48,.06)":"rgba(255,255,255,.07)";
+  const borda=claro?"rgba(26,22,48,.14)":"rgba(255,255,255,.18)";
+
+  if(layout==="antes_depois"){
+    const gap=74,cw=Math.round((larg-gap)/2),vpx=Math.round(corpo*1.35),vlh=Math.round(vpx*1.2);
+    const cols=blocos.slice(0,2).map(b=>{
+      ctx.font="800 "+vpx+"px Inter";
+      return {rot:String(b.rotulo||"").toUpperCase(),ls:quebrar(ctx,b.texto,cw-56)};
+    });
+    const hTxt=cols.reduce((m,c)=>Math.max(m,c.ls.length*vlh),0);
+    const boxH=34+rotPx+30+hTxt+34;
+    if(draw){
+      cols.forEach((c,i)=>{
+        const bx=x+i*(cw+gap),forte=i===cols.length-1;
+        ctx.fillStyle=forte?alphaHex(accent.bg,"1F"):cinza;
+        rr(ctx,bx,y,cw,boxH,22);ctx.fill();
+        ctx.strokeStyle=forte?accent.bg:borda;ctx.lineWidth=3;
+        rr(ctx,bx+1.5,y+1.5,cw-3,boxH-3,21);ctx.stroke();
+        ctx.font="800 "+rotPx+"px Inter";
+        ctx.fillStyle=forte?accent.bg:(claro?"#8A83A8":"rgba(255,255,255,.55)");
+        ctx.fillText(c.rot,bx+28,y+34+rotPx);
+        ctx.font="800 "+vpx+"px Inter";ctx.fillStyle=corTexto;
+        c.ls.forEach((l,j)=>ctx.fillText(l,bx+28,y+34+rotPx+30+vpx+j*vlh));
+      });
+      ctx.font="800 46px Inter";ctx.fillStyle=accent.bg;ctx.textAlign="center";
+      ctx.fillText("→",x+cw+gap/2,y+boxH/2+16);ctx.textAlign="left";
+    }
+    return boxH;
+  }
+
+  if(layout==="mito_verdade"){
+    let h=0;
+    blocos.slice(0,2).forEach((b,i)=>{
+      ctx.font="400 "+corpo+"px Inter";
+      const ls=quebrar(ctx,b.texto,larg-70);
+      const cor=i===0?"#E53935":accent.bg;
+      const boxH=30+rotPx+26+ls.length*lineH+16;
+      if(draw){
+        const by=y+h;
+        ctx.fillStyle=alphaHex(cor,"14");rr(ctx,x,by,larg,boxH,20);ctx.fill();
+        ctx.fillStyle=cor;rr(ctx,x,by,10,boxH,5);ctx.fill();
+        ctx.font="800 "+rotPx+"px Inter";ctx.fillStyle=cor;
+        ctx.fillText(String(b.rotulo||"").toUpperCase(),x+36,by+30+rotPx);
+        ctx.font="400 "+corpo+"px Inter";ctx.fillStyle=corTexto;
+        ls.forEach((l,j)=>ctx.fillText(l,x+36,by+30+rotPx+26+corpo+j*lineH));
+      }
+      h+=boxH+22;
+    });
+    return h;
+  }
+
+  // checklist: caixinha marcada + item
+  let h=0;
+  blocos.forEach(b=>{
+    ctx.font="400 "+corpo+"px Inter";
+    const ls=quebrar(ctx,b.texto,larg-84);
+    const itemH=Math.max(54,ls.length*lineH);
+    if(draw){
+      const by=y+h;
+      ctx.strokeStyle=accent.bg;ctx.lineWidth=4;rr(ctx,x+2,by+2,44,44,12);ctx.stroke();
+      ctx.lineWidth=6;ctx.lineCap="round";
+      ctx.beginPath();ctx.moveTo(x+13,by+24);ctx.lineTo(x+21,by+33);ctx.lineTo(x+36,by+13);ctx.stroke();
+      ctx.lineCap="butt";
+      ctx.font="400 "+corpo+"px Inter";ctx.fillStyle=corTexto;
+      ls.forEach((l,j)=>ctx.fillText(l,x+84,by+corpo+j*lineH));
+    }
+    h+=itemH+26;
+  });
+  return h;
+}
 function desenharSlide(ctx,sp,opts){
   const {idx,total,chip,foto,modo}=opts;
   const est=opts.estilo||ESTILO_PADRAO,cores=est.cores||{};
@@ -1048,24 +1238,35 @@ function desenharSlide(ctx,sp,opts){
   ctx.fillStyle=accent.bg;ctx.fillRect(0,0,14,H);
   topo(ctx,idx===0?chip:"",accent,!claro);
 
-  const mx=96;
+  const mx=96,larg=W-mx-90;
   const etiq=String(sp.etiqueta||"").trim();
   const T=String(sp.titulo||"").toUpperCase();
   const marks=marcarDestaque(T,String(sp.destaque||"").toUpperCase());
   const etiqPx=Math.round(30*mult(est,"etiqueta")),etiqH=Math.round(etiqPx*2.2)+58;
+  const blocos=(sp.blocos||[]).filter(b=>String((b&&b.texto)||"").trim());
+  const layout=blocos.length?(sp.layout||"texto"):"texto";
 
   // Mede o bloco inteiro antes de desenhar, pra distribuir na vertical (evita slide com metade vazia)
-  const t=ajustarFonteTit(ctx,est,T,W-mx-90,(fotoFixa?56:64)*mult(est,"titulo"),36,fotoFixa?3:4);
+  const t=ajustarFonteTit(ctx,est,T,larg,(fotoFixa?56:64)*mult(est,"titulo"),36,fotoFixa?3:4);
   const lineHT=Math.round(t.px*t.lh);
-  let corpo=Math.round(38*mult(est,"texto")),lineH=Math.round(corpo*1.5);
-  ctx.font="400 "+corpo+"px Inter";
-  let linhas=quebrar(ctx,sp.texto,W-mx-90);
-  const alturaBloco=()=> (etiq?etiqH:30)+t.px+t.lines.length*lineHT+96+corpo+linhas.length*lineH;
-  const tetoTexto=fotoFixa?(H-108-FRAME_MIN-56-190):940;
-  if(alturaBloco()>tetoTexto){corpo=Math.round((fotoFixa?30:32)*mult(est,"texto"));lineH=Math.round(corpo*1.5);ctx.font="400 "+corpo+"px Inter";linhas=quebrar(ctx,sp.texto,W-mx-90);}
+  const reservaFrame=layout==="texto"?FRAME_MIN:200;
+  const tetoTexto=fotoFixa?(H-108-reservaFrame-56-190):940;
+  const cabeca=(etiq?etiqH:30)+t.px+t.lines.length*lineHT+96;
+
+  // O corpo encolhe em LOOP até caber: com 30 a 45 palavras o passo único antigo não dava conta
+  let corpo=Math.round(38*mult(est,"texto")),lineH=0,linhas=[],alturaCorpo=0;
+  const medir=()=>{
+    lineH=Math.round(corpo*1.5);
+    ctx.font="400 "+corpo+"px Inter";
+    if(layout==="texto"){linhas=quebrar(ctx,sp.texto,larg);alturaCorpo=corpo+linhas.length*lineH;}
+    else alturaCorpo=blocosBody(ctx,false,layout,blocos,mx,0,larg,corpo,accent,corTexto,claro);
+  };
+  medir();
+  const pisoCorpo=layout==="texto"?24:20;
+  while(cabeca+alturaCorpo>tetoTexto&&corpo>pisoCorpo){corpo-=2;medir();}
 
   // Com imagem fixa o texto sobe pro topo; sem imagem, centraliza na vertical
-  let y=fotoFixa?190:200+Math.max(0,(960-alturaBloco())*0.35);
+  let y=fotoFixa?190:200+Math.max(0,(960-(cabeca+alturaCorpo))*0.5);
   if(etiq){
     const c=cores.etiqueta
       ? {bg:cores.etiqueta,fg:corClara(cores.etiqueta)?DARK:"#FFFFFF"}
@@ -1077,13 +1278,26 @@ function desenharSlide(ctx,sp,opts){
   ctx.font=t.font;
   const fimTitulo=desenharLinhasT(ctx,t.lines,marks,mx,y+t.px,lineHT,"left",corTitulo,corDestaque);
 
-  ctx.fillStyle=accent.bg;rr(ctx,mx,fimTitulo+26,150,10,5);ctx.fill();
+  // Divisor: vira trilha de progresso quando o slide é passo/item numerado
+  if(sp.passo&&sp.passo.de>1){
+    const seg=Math.min(110,Math.round((larg-(sp.passo.de-1)*12)/sp.passo.de));
+    for(let i=0;i<sp.passo.de;i++){
+      ctx.fillStyle=i<sp.passo.n?accent.bg:(claro?"rgba(26,22,48,.15)":"rgba(255,255,255,.22)");
+      rr(ctx,mx+i*(seg+12),fimTitulo+26,seg,10,5);ctx.fill();
+    }
+  }else{ctx.fillStyle=accent.bg;rr(ctx,mx,fimTitulo+26,150,10,5);ctx.fill();}
 
-  ctx.font="400 "+corpo+"px Inter";
-  ctx.fillStyle=corTexto;
-  const fimTexto=desenharLinhas(ctx,linhas,mx,fimTitulo+96+corpo,lineH);
+  let fimTexto;
+  if(layout==="texto"){
+    ctx.font="400 "+corpo+"px Inter";
+    ctx.fillStyle=corTexto;
+    fimTexto=desenharLinhas(ctx,linhas,mx,fimTitulo+96+corpo,lineH);
+  }else{
+    const yB=fimTitulo+92;
+    fimTexto=yB+blocosBody(ctx,true,layout,blocos,mx,yB,larg,corpo,accent,corTexto,claro);
+  }
 
-  if(fotoFixa)frameAuto(ctx,fotoFixa,fimTexto+50,inteira);
+  if(fotoFixa)frameAuto(ctx,fotoFixa,fimTexto+50,inteira,reservaFrame);
 
   metaBar(ctx,idx,total,accent,!claro);
 }
@@ -1093,7 +1307,17 @@ function montarSlides(projeto){
   const capa=projeto.capaIdx!=null?projeto.capas[projeto.capaIdx]:null;
   if(!capa||!projeto.cta||!projeto.slides.length) return [];
   const list=[{key:"capa",tipo:"capa",headline:capa.headline,sub:capa.subtitulo,destaque:capa.destaque||"",prompt_imagem:capa.prompt_imagem||""}];
-  projeto.slides.forEach((s,i)=>list.push({key:"s"+i,tipo:"interno",etiqueta:s.etiqueta,titulo:s.titulo,texto:s.texto,destaque:s.destaque||"",prompt_imagem:s.prompt_imagem||""}));
+  // Passos/itens numerados viram trilha de progresso na arte: a pessoa vê que falta pouco e chega ao fim
+  const numerados=projeto.slides.filter(s=>/^(PASSO|ITEM)\s*\d+/i.test(String(s.etiqueta||"").trim()));
+  let np=0;
+  projeto.slides.forEach((s,i)=>{
+    const ehNum=/^(PASSO|ITEM)\s*\d+/i.test(String(s.etiqueta||"").trim());
+    if(ehNum)np++;
+    list.push({key:"s"+i,tipo:"interno",etiqueta:s.etiqueta,titulo:s.titulo,texto:s.texto,
+      destaque:s.destaque||"",prompt_imagem:s.prompt_imagem||"",
+      layout:s.layout||"texto",blocos:s.blocos||[],
+      passo:ehNum?{n:np,de:numerados.length}:null});
+  });
   list.push({key:"cta",tipo:"cta",titulo:projeto.cta.titulo,texto:projeto.cta.texto,keyword:projeto.cta.palavra_chave,destaque:projeto.cta.destaque||"",prompt_imagem:projeto.cta.prompt_imagem||""});
   return list;
 }
