@@ -139,9 +139,26 @@ DESTAQUE DE TÍTULO (campo "destaque"):
 - String vazia quando nenhum trecho merecer. Nunca destaque o título inteiro nem trechos genéricos ("o seu", "que você").
 
 PROMPT DE IMAGEM (campo "prompt_imagem"):
-- Para a capa e para cada slide, escreva um prompt EM INGLÊS para gerar uma fotografia de apoio, como um diretor de criação, neste formato: [Subject with adjectives] doing [action] in [context]. [Composition/camera angle]. [Lighting/atmosphere]. [Photography style].
-- Cena concreta ligada à ideia daquele slide (criador brasileiro no celular, estúdio caseiro, tela com métricas, notificações chegando). Nada genérico tipo "social media concept". Sem pessoas famosas.
-- Proibido pedir texto na imagem: termine SEMPRE com "No text, no letters, no logos."
+Esse prompt vai ser colado num gerador de imagem. A imagem entra numa MOLDURA dentro do slide, embaixo do texto, e não atrás dele: então ela precisa mostrar algo concreto, que se explique sozinho e que combine com o assunto DAQUELE slide.
+
+Escolha UM dos 4 tipos, pelo que o slide fala:
+
+1. MOCKUP DE INTERFACE. Quando o slide fala de uma tela, menu, botão, aba, painel ou função de um app de terceiro (Instagram, WhatsApp, Google, TikTok, YouTube). Descreva qual app, que parte dele está aberta, e qual elemento aparece em destaque.
+2. ÍCONES DE APP EM 3D. Quando o slide fala das plataformas em si, compara serviços, ou lista onde algo passa a funcionar. Descreva os ícones reais (Instagram, TikTok, YouTube, WhatsApp) como objetos 3D de cantos arredondados, flutuando, com sombra suave, sobre fundo limpo.
+3. GRÁFICO OU NÚMERO EM 3D. Quando o slide traz dado, porcentagem, comparação numérica, crescimento, queda, ou uma opinião sem tela envolvida. Descreva barras, medidor ou um número grande em 3D, dizendo qual número aparece.
+4. PRINT REAL, sem gerar prompt. SOMENTE quando o slide mostra a tela da PRÓPRIA ResponDM. Nesse caso o campo recebe exatamente este texto em português e mais nada: PRINT REAL: este slide mostra a tela da ResponDM. Suba um print de verdade, não gere imagem.
+
+COMO ESCREVER (vale para os tipos 1, 2 e 3):
+- Um parágrafo só, escrito em inglês, porque o gerador acerta mais assim.
+- Os textos que aparecem DENTRO da imagem vão em PORTUGUÊS, entre aspas, exatamente como devem ser desenhados. Exemplo: a menu item labeled "Trocar áudio".
+- No máximo 5 rótulos curtos na imagem inteira, de 1 a 3 palavras cada. Quanto mais texto, mais o gerador entorta a letra.
+- NUNCA peça o título do slide, a headline, hashtag, preço ou frase de marketing dentro da imagem: todo o texto do slide é desenhado por fora, por cima da arte.
+- Diga o enquadramento e a proporção: tela de celular em vertical, painel de computador em horizontal, ícones e gráficos em quadrado. A interface preenche o quadro, sem margem enorme em volta.
+- Diga a luz e o fundo (fundo limpo ou escuro, sombra suave, reflexo). Cada slide pode ter um clima próprio: eles NÃO precisam formar uma série visual.
+- Logo de app famoso é permitido e desejável quando o slide fala dele. Proibido inventar logotipo da ResponDM ou de marca que não existe, e proibido marca d'água.
+- Sem pessoas famosas. Evite foto de gente genérica: só inclua pessoa se a ação dela for o assunto do slide.
+
+REGRA QUE MANDA EM TODAS: a imagem mostra o ASSUNTO do slide. Se o slide fala de uma função nova, a imagem é aquela função na tela, nunca uma cena decorativa de criador de conteúdo.
 
 ESTRUTURA GERAL: slide 1 é a capa (hook de payoff). Slide 2 reduz ceticismo e abre o loop ("nos próximos X slides você vai ver..."). Desenvolvimento em escalada. Resumo salvável quando houver 5+ slides internos. Último slide é o CTA com loop-back.`;
 
@@ -173,7 +190,7 @@ const SCHEMA_CAPAS={
         headline:{type:"string",description:"Título da capa, 6 a 12 palavras, anuncia o payoff (nunca o assunto), para o scroll sozinho"},
         subtitulo:{type:"string",description:"1 frase que neutraliza a objeção principal ou aumenta a tensão"},
         destaque:{type:"string",description:"Trecho de 1 a 3 palavras consecutivas copiado EXATAMENTE da headline que ganha cor de destaque, ou string vazia"},
-        prompt_imagem:{type:"string",description:"Prompt EM INGLÊS para foto de fundo da capa, formato diretor de criação, terminando com: No text, no letters, no logos."},
+        prompt_imagem:{type:"string",description:"Prompt de imagem da capa seguindo as regras de PROMPT DE IMAGEM: um parágrafo em inglês, com os rótulos da tela em português entre aspas, OU o aviso PRINT REAL quando for a tela da ResponDM"},
       },
       required:["headline","subtitulo","destaque","prompt_imagem"],additionalProperties:false,
     }},
@@ -191,7 +208,7 @@ const SCHEMA_ROTEIRO={
         titulo:{type:"string",description:"Título do slide, até 10 palavras, provoca em vez de descrever"},
         texto:{type:"string",description:"Texto de apoio, 1 a 2 frases, 15 a 25 palavras; slide inteiro até 40 palavras"},
         destaque:{type:"string",description:"Trecho de 1 a 3 palavras consecutivas copiado EXATAMENTE do título que ganha cor de destaque, ou string vazia"},
-        prompt_imagem:{type:"string",description:"Prompt EM INGLÊS para foto de apoio deste slide, formato diretor de criação, terminando com: No text, no letters, no logos."},
+        prompt_imagem:{type:"string",description:"Prompt de imagem deste slide seguindo as regras de PROMPT DE IMAGEM: um parágrafo em inglês, com os rótulos da tela em português entre aspas, OU o aviso PRINT REAL quando for a tela da ResponDM"},
       },
       required:["etiqueta","titulo","texto","destaque","prompt_imagem"],additionalProperties:false,
     }},
@@ -201,7 +218,7 @@ const SCHEMA_ROTEIRO={
         texto:{type:"string",description:"Instrução curta: comente a palavra-chave e receba no direct"},
         palavra_chave:{type:"string",description:"UMA palavra em maiúsculas"},
         destaque:{type:"string",description:"Trecho de 1 a 3 palavras consecutivas copiado EXATAMENTE do título do CTA, ou string vazia"},
-        prompt_imagem:{type:"string",description:"Prompt EM INGLÊS para foto de apoio do CTA, formato diretor de criação, terminando com: No text, no letters, no logos."},
+        prompt_imagem:{type:"string",description:"Prompt de imagem do CTA seguindo as regras de PROMPT DE IMAGEM: um parágrafo em inglês, com os rótulos em português entre aspas, OU o aviso PRINT REAL quando for a tela da ResponDM"},
       },
       required:["titulo","texto","palavra_chave","destaque","prompt_imagem"],additionalProperties:false,
     },
@@ -1089,7 +1106,7 @@ function loadImage(dataURL){
 function promptPadrao(sp,projeto){
   if(sp.prompt_imagem)return sp.prompt_imagem;
   const assunto=sp.tipo==="interno"?sp.titulo:(projeto.tema||sp.headline||sp.titulo||"");
-  return "Fundo fotográfico vertical, proporção 4:5 (retrato), para um slide de carrossel do Instagram. PROIBIDO qualquer texto, letra, número ou logotipo na imagem. Cena relacionada a: "+assunto+". Estilo: fotografia profissional, tons escuros, iluminação dramática com luz roxa, clima tech.";
+  return "Realistic app interface mockup about: "+assunto+". Show the relevant screen or app icons as the subject, filling the frame. Any on-screen label must be short and in Portuguese, in quotes. Clean background, soft shadow, studio lighting. No slide headline, no marketing text, no watermark.";
 }
 
 const MODO_NOME={fundo:"Fundo do slide",fixa:"Print recortado",inteira:"Print inteiro"};
@@ -1370,17 +1387,25 @@ TAREFA: escreva a legenda completa deste post. A palavra-chave do CTA é `
               </div>
             </Field>
           )}
+          {promptFoto.trim().toUpperCase().startsWith("PRINT REAL")&&(
+            <div style={{fontSize:13,fontWeight:600,color:"var(--text)",background:"var(--purple-light)",border:"1.5px solid var(--purple-mid)",borderRadius:11,padding:"10px 14px",marginBottom:14}}>
+              Este slide mostra a tela da ResponDM. Suba um print de verdade: imagem gerada por IA inventaria uma tela que não existe.
+            </div>
+          )}
           <Field label="Prompt da imagem (a IA do roteiro já sugere um, edite à vontade)">
             <textarea rows={3} style={{...inputStyle,resize:"vertical"}} value={promptFoto} onChange={e=>setPromptFoto(e.target.value)}/>
           </Field>
           <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-            <Btn onClick={gerarFotoIA} disabled={busyFoto}>
+            <Btn onClick={gerarFotoIA} disabled={busyFoto||promptFoto.trim().toUpperCase().startsWith("PRINT REAL")}>
               {busyFoto?<span><span className="spinner"/>Gerando imagem...</span>:"✨ Gerar com IA"}
             </Btn>
             <label style={{display:"inline-block"}}>
               <span style={{display:"inline-block",padding:"12px 22px",borderRadius:12,fontWeight:700,fontSize:14,cursor:"pointer",border:"1.5px solid var(--border2)",background:"var(--surface)"}}>📁 Subir imagem</span>
               <input type="file" accept="image/*" onChange={subirFoto} style={{display:"none"}}/>
             </label>
+            <Btn variant="secondary" onClick={()=>copiar(promptFoto,"prompt")}>
+              {copiado==="prompt"?"✓ Copiado":"📋 Copiar prompt"}
+            </Btn>
             {f&&<Btn variant="secondary" onClick={removerFoto}>Remover imagem</Btn>}
           </div>
           <div style={{fontSize:11,color:"var(--text3)",marginTop:12}}>As imagens não ficam salvas no rascunho: se fechar a aba, será preciso gerar ou subir de novo.</div>
